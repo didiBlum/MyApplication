@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.adiBlum.adiblum.myapplication.MainActivity">
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="$ How Much I&apos;ve Made $"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/todayTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/titleTextView"
+        android:layout_marginTop="35dp"
+        android:drawableLeft="@drawable/day_icon"
+        android:drawablePadding="10dp"
+        android:text="@string/today"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/weekTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/todayTextView"
+        android:layout_alignStart="@+id/todayTextView"
+        android:layout_below="@+id/todayTextView"
+        android:layout_marginTop="35dp"
+        android:drawableLeft="@drawable/week_calendar_icon"
+        android:text="This week:"
+        android:drawablePadding="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/monthTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/weekTextView"
+        android:layout_alignStart="@+id/weekTextView"
+        android:layout_below="@+id/weekTextView"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="35dp"
+        android:drawablePadding="10dp"
+        android:drawableLeft="@drawable/year_icon"
+        android:text="This month:"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/customDatesTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/customDatesButton"
+        android:layout_alignStart="@+id/customDatesButton"
+        android:layout_below="@+id/monthTextView"
+        android:layout_marginTop="35dp"
+        android:text="Custom date:"
+        android:drawableLeft="@drawable/custom_icon"
+        android:drawablePadding="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/customDatesButton"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:layout_above="@+id/progressBar1"
+        android:layout_alignLeft="@+id/monthTextView"
+        android:layout_alignStart="@+id/monthTextView"
+        android:layout_below="@+id/customDatesTextView"
+        android:layout_marginTop="35dp"
+        android:onClick="setDatePicker"
+        android:text="Choose custom dates"
+        android:layout_gravity="center" />
+
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+
+</RelativeLayout>

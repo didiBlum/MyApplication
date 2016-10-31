@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Auto Work Log</string>
+    <string name="app_uid_production">9d862fb23e82228c9bb6a35ba7a66ef5094e58dc175ffee7982e8043687ff701</string>
+    <string name="app_secret_production">149e8af8df917914f145cedb4d68f36981feb7cbbebeb8046a8049b307de489c</string>
+    <string name="settings">Settings</string>
+    <string name="share">Share</string>
+    <string name="statistics">Statistics</string>
+    <string name="today">Today:</string>
+</resources>

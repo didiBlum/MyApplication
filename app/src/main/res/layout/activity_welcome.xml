@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerHorizontal="true"
+    android:paddingLeft="30dp"
+    android:paddingTop="30dp"
+    >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Welcome to Auto Work Log"
+        android:id="@+id/textView"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="245dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="We use your location data, provided by Neura to log your work time, and calculate your pay check."
+        android:id="@+id/textView2"
+        android:layout_marginTop="30dp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Let&apos;s get started!"
+        android:id="@+id/textView3"
+        android:layout_marginTop="30dp"
+        android:textStyle="bold"/>
+
+    <EditText
+        android:layout_width="328dp"
+        android:layout_height="wrap_content"
+        android:inputType="numberSigned"
+        android:ems="10"
+        android:id="@+id/hourSalary"
+        android:hint="Hourly salary"
+        android:layout_marginTop="30dp"/>
+
+    <EditText
+        android:layout_width="328dp"
+        android:layout_height="wrap_content"
+        android:inputType="numberSigned"
+        android:ems="10"
+        android:id="@+id/dailySalary"
+        android:hint="Additional daily (transportation, meals..)"
+        android:layout_marginTop="30dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:id="@+id/button"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:onClick="saveUserSalaryData"
+        android:backgroundTint="#00CCFC"
+        android:textSize="20sp"
+        android:fontFamily="@string/neura_sdk_place_feedback_delete_message_approval_dialog" />
+
+</LinearLayout>
