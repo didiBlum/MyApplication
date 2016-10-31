@@ -5,9 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.v4.view.ActionProvider;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.view.Menu;
@@ -33,15 +30,16 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Map<String, Double> datesToHours = new HashMap<>();
+    private static final String IS_FIRST_RUN = "isFirstRun";
+    private static final String dateFormat = "MMM d";
 
+    private Map<String, Double> datesToHours = new HashMap<>();
     int pendingAnswers = 0;
     private MainActivity mainActivity;
-    private static final String dateFormat = "MMM d";
     private SalaryCalculator salaryCalculator = new SalaryCalculator();
     private boolean isCustom = false;
     private Date customStart = null;
-    private Date customend = null;
+    private Date customEnd = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,9 +91,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void isFirstTime() {
         Boolean isFirstRun = getSharedPreferences(getApplicationContext())
-                .getBoolean("isFirstRun", true);
+                .getBoolean(IS_FIRST_RUN, true);
         if (isFirstRun || !salaryCalculator.isInitSalaryValues(getApplicationContext())) {
-            getSharedPreferences(getApplicationContext()).edit().putBoolean("isFirstRun", false).commit();
+            getSharedPreferences(getApplicationContext()).edit().putBoolean(IS_FIRST_RUN, false).commit();
             showWelcome();
         } else {
             mainFlow();
@@ -106,8 +104,7 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(new Intent(this, WelcomeActivity.class), 0);
     }
 
-    protected void onActivityResult(int requestCode, int resultCode,
-                                    Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         mainFlow();
     }
 
@@ -149,10 +146,11 @@ public class MainActivity extends AppCompatActivity {
         Date current = cal.getTime();
         collectData(daysCalculated, timeSpentAtWork, current);
 
+        assert textView != null;
         if (timeSpentAtWork[0].equals(-1.0)) {
             textView.setText(Html.fromHtml("No data found for all the days since the beginning of the month"));
         } else {
-            String time = setText(timeSpentAtWork[0], daysCalculated[0]);
+            String time = getTextForData(timeSpentAtWork[0], daysCalculated[0]);
             textView.setText(Html.fromHtml("Time spent at work from the beginning of the month: " + time));
         }
     }
@@ -165,10 +163,11 @@ public class MainActivity extends AppCompatActivity {
         Date current = cal.getTime();   //start with begging of week
         collectData(daysCalculated, timeSpentAtWork, current);
         TextView textView = (TextView) mainActivity.findViewById(R.id.weekTextView);
+        assert textView != null;
         if (timeSpentAtWork[0].equals(-1.0)) {
             textView.setText(Html.fromHtml("No data found for all the days since the beginning of the week"));
         } else {
-            String time = setText(timeSpentAtWork[0], daysCalculated[0]);
+            String time = getTextForData(timeSpentAtWork[0], daysCalculated[0]);
             textView.setText(Html.fromHtml("Time spent at work this week: " + time));
         }
     }
@@ -180,8 +179,10 @@ public class MainActivity extends AppCompatActivity {
         if (timeSpentAtWork > 0) {
             workingDays++;
         }
-        String time = setText(timeSpentAtWork, workingDays);
-        textView.setText(Html.fromHtml("Time spent at work today: " + time));
+        String time = getTextForData(timeSpentAtWork, workingDays);
+        if (textView != null) {
+            textView.setText(Html.fromHtml("Time spent at work today: " + time));
+        }
     }
 
     private synchronized void incPendingAnswers() {
@@ -222,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             isCustom = true;
             customStart = startDate;
-            customend = endDate;
+            customEnd = endDate;
             if (askForDataForDates(startDate, endDate)) {
                 getCustomDataForDates(startDate, endDate);
             }
@@ -239,10 +240,11 @@ public class MainActivity extends AppCompatActivity {
         String endString = new SimpleDateFormat(dateFormat).format(endDate);
 
         collectDataBetweenDates(workingDays, timeSpentAtWork, startDate, endDate);
+        assert textView != null;
         if (timeSpentAtWork[0].equals(-1.0)) {
             textView.setText(Html.fromHtml("No data was found for all the days between " + startString + " till " + endString));
         } else {
-            String time = setText(timeSpentAtWork[0], workingDays[0]);
+            String time = getTextForData(timeSpentAtWork[0], workingDays[0]);
             textView.setText(Html.fromHtml("Time spent at work from " + startString + " till " + endString + ": " + time));
         }
         resetCustom();
@@ -251,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
     private void resetCustom() {
         isCustom = false;
         customStart = null;
-        customend = null;
+        customEnd = null;
     }
 
     public void requestDailySummaryFromClient(final Date date) {
@@ -264,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(DailySummaryData dailySummaryData) {
                 double timeSpentAtWork = getTimeSpentAtWork(dailySummaryData);
-                handleHttpResultForDay(timeSpentAtWork, dateToday);
+                handleResultForDay(timeSpentAtWork, dateToday);
             }
 
             @Override
@@ -275,48 +277,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    public void requestDailySummary(final Date date) {
-//        incPendingAnswers();
-////        System.out.println("getting data from server for " + date);
-//        RequestQueue queue = Volley.newRequestQueue(this);
-//        final String dateToday = new SimpleDateFormat("yyyy-MM-dd").format(date);
-//        String url = URL + dateToday;
-//        StringRequest postRequest = new StringRequest(Request.Method.GET, url,
-//                new Response.Listener<String>() {
-//                    @Override
-//                    public void onResponse(String response) {
-////                        System.out.println("Response" + response);
-//                        try {
-//                            double timeSpentAtWork = getTimeSpentAtWork(response);
-//                            handleHttpResultForDay(timeSpentAtWork, dateToday);
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                            handleHttpResultForDay(-1.0, dateToday);
-//                        }
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-////                        System.out.println("error => " + error.toString());
-//                        decPendingAnswers();
-//                    }
-//                }
-//        ) {
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError {
-//                Map<String, String> params = new HashMap<>();
-//                String bearer = "Bearer " + NeuraConnection.getAccessToken(getApplicationContext());
-////                System.out.println("bearer: " + bearer);
-//
-//                params.put("Authorization", bearer);
-//                return params;
-//            }
-//        };
-//        queue.add(postRequest);
-//    }
-
-    private void handleHttpResultForDay(double timeSpentAtWork, String dateToday) {
+    private void handleResultForDay(double timeSpentAtWork, String dateToday) {
 //        System.out.println("timeSpentAtWork: " + timeSpentAtWork / 60 / 60 + " hours");
         SaveDataHelper.addToFile(dateToday + ":" + timeSpentAtWork + ";", getApplicationContext());
         datesToHours.put(dateToday, timeSpentAtWork);
@@ -324,13 +285,13 @@ public class MainActivity extends AppCompatActivity {
 //        System.out.println("pendingAnswers-- now is: " + getPendingAnswers());
         if (getPendingAnswers() == 0) {
             if (isCustom) {
-                getCustomDataForDates(customStart, customend);
+                getCustomDataForDates(customStart, customEnd);
             }
             updateTextViews();
         }
     }
 
-    private String setText(double timeSpentAtWork, int workingDays) {
+    private String getTextForData(double timeSpentAtWork, int workingDays) {
         String formatteedTime = SaveDataHelper.getPrettyTimeString(timeSpentAtWork);
         double salary = salaryCalculator.geySalaryForTime(timeSpentAtWork, getApplicationContext(), workingDays);
         return "<b><font color=\"#007f00\">" + formatteedTime + "  - total " + salary + "$</font></b>";
@@ -411,4 +372,3 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
-
