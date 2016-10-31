@@ -14,26 +14,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.leavjenn.smoothdaterangepicker.date.SmoothDateRangePickerFragment;
+import com.neura.resources.insights.DailySummaryCallbacks;
+import com.neura.resources.insights.DailySummaryData;
+import com.neura.resources.object.ActivityPlace;
+import com.neura.standalonesdk.service.NeuraApiClient;
 import com.neura.standalonesdk.util.SDKUtils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,18 +33,15 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String URL = "https://wapi.theneura.com/v1/users/profile/daily_summary?date=";
     private Map<String, Double> datesToHours = new HashMap<>();
 
     int pendingAnswers = 0;
     private MainActivity mainActivity;
     private static final String dateFormat = "MMM d";
-    private static final String textColor = "#007f00";
     private SalaryCalculator salaryCalculator = new SalaryCalculator();
     private boolean isCustom = false;
     private Date customStart = null;
     private Date customend = null;
-    private ActionProvider mShareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
                 showWelcome();
                 return true;
             case R.id.action_share:
-                mShareActionProvider = MenuItemCompat.getActionProvider(item);
                 showShare();
                 return true;
         }
@@ -83,11 +71,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showShare() {
-        Intent i = new Intent(android.content.Intent.ACTION_SEND);
-        i.setType("text/plain");
-        String monthly = ShareHelper.createMonthly(datesToHours, getFirstDateOfTheMonth(), new Date());
-        i.putExtra(android.content.Intent.EXTRA_SUBJECT, "Monthly report for " + getMonthName());
-        i.putExtra(android.content.Intent.EXTRA_TEXT, monthly);
+        Intent i = ShareHelper.getIntentForShare(datesToHours);
         startActivity(Intent.createChooser(i, "Share via"));
     }
 
@@ -270,46 +254,67 @@ public class MainActivity extends AppCompatActivity {
         customend = null;
     }
 
-    public void requestDailySummary(final Date date) {
+    public void requestDailySummaryFromClient(final Date date) {
         incPendingAnswers();
 //        System.out.println("getting data from server for " + date);
-        RequestQueue queue = Volley.newRequestQueue(this);
         final String dateToday = new SimpleDateFormat("yyyy-MM-dd").format(date);
-        String url = URL + dateToday;
-        StringRequest postRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-//                        System.out.println("Response" + response);
-                        try {
-                            double timeSpentAtWork = getTimeSpentAtWork(response);
-                            handleHttpResultForDay(timeSpentAtWork, dateToday);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            handleHttpResultForDay(-1.0, dateToday);
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-//                        System.out.println("error => " + error.toString());
-                        decPendingAnswers();
-                    }
-                }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                String bearer = "Bearer " + NeuraConnection.getAccessToken(getApplicationContext());
-//                System.out.println("bearer: " + bearer);
 
-                params.put("Authorization", bearer);
-                return params;
+        NeuraApiClient client = NeuraConnection.getClient();
+        client.getDailySummary(date.getTime(), new DailySummaryCallbacks() {
+            @Override
+            public void onSuccess(DailySummaryData dailySummaryData) {
+                double timeSpentAtWork = getTimeSpentAtWork(dailySummaryData);
+                handleHttpResultForDay(timeSpentAtWork, dateToday);
             }
-        };
-        queue.add(postRequest);
+
+            @Override
+            public void onFailure(Bundle bundle, int i) {
+                decPendingAnswers();
+            }
+        });
+
     }
+
+//    public void requestDailySummary(final Date date) {
+//        incPendingAnswers();
+////        System.out.println("getting data from server for " + date);
+//        RequestQueue queue = Volley.newRequestQueue(this);
+//        final String dateToday = new SimpleDateFormat("yyyy-MM-dd").format(date);
+//        String url = URL + dateToday;
+//        StringRequest postRequest = new StringRequest(Request.Method.GET, url,
+//                new Response.Listener<String>() {
+//                    @Override
+//                    public void onResponse(String response) {
+////                        System.out.println("Response" + response);
+//                        try {
+//                            double timeSpentAtWork = getTimeSpentAtWork(response);
+//                            handleHttpResultForDay(timeSpentAtWork, dateToday);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                            handleHttpResultForDay(-1.0, dateToday);
+//                        }
+//                    }
+//                },
+//                new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+////                        System.out.println("error => " + error.toString());
+//                        decPendingAnswers();
+//                    }
+//                }
+//        ) {
+//            @Override
+//            public Map<String, String> getHeaders() throws AuthFailureError {
+//                Map<String, String> params = new HashMap<>();
+//                String bearer = "Bearer " + NeuraConnection.getAccessToken(getApplicationContext());
+////                System.out.println("bearer: " + bearer);
+//
+//                params.put("Authorization", bearer);
+//                return params;
+//            }
+//        };
+//        queue.add(postRequest);
+//    }
 
     private void handleHttpResultForDay(double timeSpentAtWork, String dateToday) {
 //        System.out.println("timeSpentAtWork: " + timeSpentAtWork / 60 / 60 + " hours");
@@ -331,13 +336,11 @@ public class MainActivity extends AppCompatActivity {
         return "<b><font color=\"#007f00\">" + formatteedTime + "  - total " + salary + "$</font></b>";
     }
 
-    private double getTimeSpentAtWork(String dailySummaryJson) throws JSONException {
-        JSONObject json = new JSONObject(dailySummaryJson);
-        JSONArray jsonArray = json.getJSONObject("data").getJSONArray("visitedPlaces");
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject visitedPlace = jsonArray.getJSONObject(i);
-            if ("work".equals(visitedPlace.getString("label"))) {
-                return visitedPlace.getDouble("timeSpentAtPlace");
+    private double getTimeSpentAtWork(DailySummaryData dailySummaryData) {
+        ArrayList<ActivityPlace> activityPlaces = dailySummaryData.getActivityPlaces();
+        for (ActivityPlace activityPlace : activityPlaces) {
+            if (activityPlace.getLabel().equals("work")) {
+                return activityPlace.getTimeSpentAtPlace();
             }
         }
         return 0;
@@ -346,12 +349,12 @@ public class MainActivity extends AppCompatActivity {
     private boolean getDataForDay(Date date) throws IOException {
 //        System.out.println("getting data for day: " + date);
         if (SaveDataHelper.isSameDay(date, new Date())) { // always ask for today
-            requestDailySummary(date);
+            requestDailySummaryFromClient(date);
             return false;
         }
         String stringDate = SaveDataHelper.getStringDate(date);
         if (!datesToHours.containsKey(stringDate)) {
-            requestDailySummary(date);
+            requestDailySummaryFromClient(date);
             return false;
         }
         return true;
@@ -380,25 +383,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean askForDataForDatesOfMonth() throws IOException {
-        Date current = getFirstDateOfTheMonth();
+        Date current = DatesHelper.getFirstDateOfTheMonth();
         return askForDataForDates(current, new Date());
-    }
-
-    private Date getFirstDateOfTheMonth() {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
-        cal.clear(Calendar.MINUTE);
-        cal.clear(Calendar.SECOND);
-        cal.clear(Calendar.MILLISECOND);
-
-        // get start of the month
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        return cal.getTime();
-    }
-
-    private String getMonthName() {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM yyyy");
-        return sdf.format(new Date());
     }
 
     private synchronized boolean askForDataForDates(Date start, Date end) throws IOException {
