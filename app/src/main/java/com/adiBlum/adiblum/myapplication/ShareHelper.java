@@ -1,5 +1,8 @@
 package com.adiBlum.adiblum.myapplication;
 
+import android.content.Intent;
+import android.support.annotation.NonNull;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -48,4 +51,15 @@ public class ShareHelper {
         startDate = cal.getTime();
         return startDate;
     }
+
+    @NonNull
+    public static Intent getIntentForShare(Map<String, Double> datesToHours) {
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("text/plain");
+        String monthly = ShareHelper.createMonthly(datesToHours, DatesHelper.getFirstDateOfTheMonth(), new Date());
+        i.putExtra(Intent.EXTRA_SUBJECT, "Monthly report for " + DatesHelper.getMonthName());
+        i.putExtra(Intent.EXTRA_TEXT, monthly);
+        return i;
+    }
+
 }

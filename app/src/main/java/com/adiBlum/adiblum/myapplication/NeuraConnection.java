@@ -121,4 +121,8 @@ public class NeuraConnection {
         return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
+    public static NeuraApiClient getClient() {
+        return mNeuraApiClient;
+    }
+
 }
