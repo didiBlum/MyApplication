@@ -50,8 +50,7 @@
         android:ems="10"
         android:id="@+id/dailySalary"
         android:hint="@string/additional_daily_transportation_meals"
-        android:layout_marginTop="30dp"
-        />
+        android:layout_marginTop="30dp" />
 
     <Button
         android:layout_width="wrap_content"
@@ -63,6 +62,6 @@
         android:onClick="saveUserSalaryData"
         android:backgroundTint="#00CCFC"
         android:textSize="20sp"
-        />
+        android:fontFamily="@string/neura_sdk_place_feedback_delete_message_approval_dialog" />
 
 </LinearLayout>

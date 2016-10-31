@@ -6,4 +6,15 @@
     <string name="share">Share</string>
     <string name="statistics">Statistics</string>
     <string name="today">Today:</string>
+    <string name="choose_custom_dates">Choose custom dates</string>
+    <string name="custom_date">Custom date:</string>
+    <string name="this_month">This month:</string>
+    <string name="this_week">This week:</string>
+    <string name="how_much_i_apos_ve_made">$ How Much I\'ve Made $</string>
+    <string name="welcome_to_auto_work_log">Welcome to Auto Work Log</string>
+    <string name="we_use_your_location_data_provided_by_neura_to_log_your_work_time_and_calculate_your_pay_check">We use your location data, provided by Neura to log your work time, and calculate your pay check.</string>
+    <string name="let_apos_s_get_started">Let\'s get started!</string>
+    <string name="hourly_salary">Hourly salary</string>
+    <string name="additional_daily_transportation_meals">Additional daily (transportation, meals..)</string>
+    <string name="save">Save</string>
 </resources>

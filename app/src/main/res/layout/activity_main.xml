@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:text="$ How Much I&apos;ve Made $"
+        android:text="@string/how_much_i_apos_ve_made"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textStyle="bold" />
 
@@ -40,7 +40,7 @@
         android:layout_below="@+id/todayTextView"
         android:layout_marginTop="35dp"
         android:drawableLeft="@drawable/week_calendar_icon"
-        android:text="This week:"
+        android:text="@string/this_week"
         android:drawablePadding="10dp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -55,7 +55,7 @@
         android:layout_marginTop="35dp"
         android:drawablePadding="10dp"
         android:drawableLeft="@drawable/year_icon"
-        android:text="This month:"
+        android:text="@string/this_month"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
@@ -66,7 +66,7 @@
         android:layout_alignStart="@+id/customDatesButton"
         android:layout_below="@+id/monthTextView"
         android:layout_marginTop="35dp"
-        android:text="Custom date:"
+        android:text="@string/custom_date"
         android:drawableLeft="@drawable/custom_icon"
         android:drawablePadding="10dp"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -81,7 +81,7 @@
         android:layout_below="@+id/customDatesTextView"
         android:layout_marginTop="35dp"
         android:onClick="setDatePicker"
-        android:text="Choose custom dates"
+        android:text="@string/choose_custom_dates"
         android:layout_gravity="center" />
 
     <ProgressBar
