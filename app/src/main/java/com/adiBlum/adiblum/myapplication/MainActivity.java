@@ -74,10 +74,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_settings:
                 showWelcome();
                 return true;
-            case R.id.action_share:
-                mShareActionProvider = MenuItemCompat.getActionProvider(item);
-                showShare();
-                return true;
+//            case R.id.action_share:
+//                mShareActionProvider = MenuItemCompat.getActionProvider(item);
+//                showShare();
+//                return true;
         }
         return true;
     }
@@ -366,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
         cal.setTime(current);
         while (current.before(lastDay) || SaveDataHelper.isSameDay(current, lastDay)) {
             Double currentVal = datesToHours.get(SaveDataHelper.getStringDate(current));
-            if (currentVal.equals(-1.0)) {
+            if (currentVal == null || currentVal.equals(-1.0)) {
                 timeSpentAtWork[0] = -1.0;
                 return;
             }
@@ -381,6 +381,9 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean askForDataForDatesOfMonth() throws IOException {
         Date current = getFirstDateOfTheMonth();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(current);
+        cal.add(Calendar.DATE, -8);
         return askForDataForDates(current, new Date());
     }
 
