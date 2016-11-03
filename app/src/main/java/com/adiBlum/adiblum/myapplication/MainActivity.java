@@ -365,6 +365,7 @@ public class MainActivity extends AppCompatActivity {
         Calendar cal = Calendar.getInstance();
         cal.setTime(current);
         while (current.before(lastDay) || SaveDataHelper.isSameDay(current, lastDay)) {
+            System.out.println("asked about " + current);
             Double currentVal = datesToHours.get(SaveDataHelper.getStringDate(current));
             if (currentVal == null || currentVal.equals(-1.0)) {
                 timeSpentAtWork[0] = -1.0;
@@ -384,7 +385,7 @@ public class MainActivity extends AppCompatActivity {
         Calendar cal = Calendar.getInstance();
         cal.setTime(current);
         cal.add(Calendar.DATE, -8);
-        return askForDataForDates(current, new Date());
+        return askForDataForDates(cal.getTime(), new Date());
     }
 
     private Date getFirstDateOfTheMonth() {
