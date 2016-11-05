@@ -10,7 +10,7 @@
     <string name="custom_date">Custom date:</string>
     <string name="this_month">This month:</string>
     <string name="this_week">This week:</string>
-    <string name="how_much_i_apos_ve_made">$ How Much I\'ve Made $</string>
+    <string name="how_much_i_apos_ve_made">My Working Hours</string>
     <string name="welcome_to_auto_work_log">Welcome to Auto Work Log</string>
     <string name="welcome_description">Auto work log will automatically log your work time, and help you calculate your pay check.\n\nWe use your data, securely collected by Neura, in order to make it all for you.
     </string>

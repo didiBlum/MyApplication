@@ -27,7 +27,7 @@ public class ShareHelper {
                     formattedTimeAtWork = "No data";
                 }
                 if (timeAtWork == 0) {
-                    formattedTimeAtWork = "Out of office";
+                    formattedTimeAtWork = "Out of work";
                 } else {
                     if (timeAtWork > 0) {
                         totalTime += timeAtWork;

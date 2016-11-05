@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.try_me);
+        setContentView(R.layout.activity_with_cells);
         isFirstTime();
     }
 
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateMonth() {
         final int[] daysCalculated = {0};
         final Double[] timeSpentAtWork = {0.0};
-        TextView textView = (TextView) mainActivity.findViewById(R.id.monthTextView);
+        TextView textView = (TextView) mainActivity.findViewById(R.id.monthlyTextview);
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
             textView.setText(Html.fromHtml("No data found for all the days since the beginning of the month"));
         } else {
             String time = getTextForData(timeSpentAtWork[0], daysCalculated[0]);
-            textView.setText(Html.fromHtml("This month: " + time));
+            textView.setText(time);
         }
     }
 
@@ -174,18 +174,18 @@ public class MainActivity extends AppCompatActivity {
         cal.set(Calendar.DAY_OF_WEEK, Calendar.getInstance().getFirstDayOfWeek());
         Date current = cal.getTime();   //start with begging of week
         collectData(daysCalculated, timeSpentAtWork, current);
-        TextView textView = (TextView) mainActivity.findViewById(R.id.weekTextView);
+        TextView textView = (TextView) mainActivity.findViewById(R.id.weeklyTextView);
         assert textView != null;
         if (timeSpentAtWork[0].equals(-1.0)) {
             textView.setText(Html.fromHtml("No data found for all the days since the beginning of the week"));
         } else {
             String time = getTextForData(timeSpentAtWork[0], daysCalculated[0]);
-            textView.setText(Html.fromHtml("This week: " + time));
+            textView.setText(time);
         }
     }
 
     private void updateToday() {
-        TextView textView = (TextView) mainActivity.findViewById(R.id.todayTextView);
+        TextView textView = (TextView) mainActivity.findViewById(R.id.dailyTextView);
         Double timeSpentAtWork = datesToHours.get(SaveDataHelper.getStringDate(new Date()));
         int workingDays = 0;
         if (timeSpentAtWork > 0) {
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         }
         String time = getTextForData(timeSpentAtWork, workingDays);
         if (textView != null) {
-            textView.setText(Html.fromHtml("Today: " + time));
+            textView.setText(time);
         }
     }
 
@@ -247,17 +247,22 @@ public class MainActivity extends AppCompatActivity {
     private void getCustomDataForDates(Date startDate, Date endDate) {
         final int[] workingDays = {0};
         final Double[] timeSpentAtWork = {0.0};
-        TextView textView = (TextView) mainActivity.findViewById(R.id.customDatesTextView);
+        TextView customDataTextView = (TextView) mainActivity.findViewById(R.id.customTextView);
+        TextView customTitleTextview = (TextView) mainActivity.findViewById(R.id.custom_title_textview);
+        assert customDataTextView != null;
+        customDataTextView.setVisibility(View.VISIBLE);
         String startString = new SimpleDateFormat(dateFormat).format(startDate);
         String endString = new SimpleDateFormat(dateFormat).format(endDate);
 
         collectDataBetweenDates(workingDays, timeSpentAtWork, startDate, endDate);
-        assert textView != null;
+        assert customDataTextView != null;
+        assert customTitleTextview != null;
+        customTitleTextview.setText(startString + " - " + endString);
         if (timeSpentAtWork[0].equals(-1.0)) {
-            textView.setText(Html.fromHtml("No data was found for all the days between " + startString + " till " + endString));
+            customDataTextView.setText("No data was found for all the days");
         } else {
             String time = getTextForData(timeSpentAtWork[0], workingDays[0]);
-            textView.setText(Html.fromHtml("From " + startString + " till " + endString + ": " + time));
+            customDataTextView.setText(time);
         }
         resetCustom();
     }
@@ -266,6 +271,16 @@ public class MainActivity extends AppCompatActivity {
         isCustom = false;
         customStart = null;
         customEnd = null;
+    }
+
+    public void removeCustom(View view) {
+        TextView customTitleTextview = (TextView) mainActivity.findViewById(R.id.custom_title_textview);
+        assert customTitleTextview != null;
+        customTitleTextview.setText(R.string.custom_date);
+        TextView customDataTextView = (TextView) mainActivity.findViewById(R.id.customTextView);
+        assert customDataTextView != null;
+        customDataTextView.setVisibility(View.INVISIBLE);
+
     }
 
 //    public void requestDailySummaryFromClient(final Date date) {
@@ -307,9 +322,9 @@ public class MainActivity extends AppCompatActivity {
         String formatteedTime = SaveDataHelper.getPrettyTimeString(timeSpentAtWork);
         double salary = salaryCalculator.geySalaryForTime(timeSpentAtWork, getApplicationContext(), workingDays);
         if (salary == SalaryCalculator.EMPTY_VALUE) {
-            return "<b><font color=\"#007f00\">" + formatteedTime + "</font></b>";
+            return formatteedTime;
         } else {
-            return "<b><font color=\"#007f00\">" + formatteedTime + "  - total " + salary + "$</font></b>";
+            return formatteedTime + "  - total " + salary + "$";
         }
     }
 
@@ -448,13 +463,17 @@ public class MainActivity extends AppCompatActivity {
 
     private double getTimeSpentAtWork(String dailySummaryJson) throws JSONException {
         JSONObject json = new JSONObject(dailySummaryJson);
-        JSONArray jsonArray = json.getJSONObject("data").getJSONArray("visitedPlaces");
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject visitedPlace = jsonArray.getJSONObject(i);
-            if ("work".equals(visitedPlace.getString("label"))) {
-                return visitedPlace.getDouble("timeSpentAtPlace");
+        JSONObject data = json.getJSONObject("data");
+        if (data != null) {
+            JSONArray jsonArray = data.getJSONArray("visitedPlaces");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject visitedPlace = jsonArray.getJSONObject(i);
+                if ("work".equals(visitedPlace.getString("label"))) {
+                    return visitedPlace.getDouble("timeSpentAtPlace");
+                }
             }
+            return 0;
         }
-        return 0;
+        return -1;
     }
 }
