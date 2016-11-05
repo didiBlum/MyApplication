@@ -9,6 +9,7 @@ import java.math.RoundingMode;
 
 public class SalaryCalculator {
 
+    public static final double EMPTY_VALUE = -1.0;
     private Double hourSalary;
     private Double dailySalary;
 
@@ -18,6 +19,11 @@ public class SalaryCalculator {
 
     public double geySalaryForTime(double timeInSeconds, Context ctx, int workingDays) {
         getSalaryValues(ctx);
+        if (checkForEmpty()) return EMPTY_VALUE;
+        return calculateNotEmptySalary(timeInSeconds, workingDays);
+    }
+
+    private double calculateNotEmptySalary(double timeInSeconds, int workingDays) {
         double result = 0;
         int hours = (int) timeInSeconds / 60 / 60;
         result += hours * hourSalary;
@@ -28,10 +34,18 @@ public class SalaryCalculator {
         return new BigDecimal(result).setScale(1, RoundingMode.HALF_UP).doubleValue();
     }
 
+    private boolean checkForEmpty() {
+        if ((hourSalary == null || hourSalary.equals(EMPTY_VALUE)) &&
+                dailySalary == null || dailySalary.equals(EMPTY_VALUE)){
+            return true;
+        }
+        return false;
+    }
+
     private void getSalaryValues(Context ctx) {
-        String hourSalary = getSharedPreferences(ctx).getString("hourSalary", "0");
+        String hourSalary = getSharedPreferences(ctx).getString("hourSalary", "-1");
         this.hourSalary = Double.parseDouble(hourSalary);
-        String dailySalary = getSharedPreferences(ctx).getString("dailySalary", "0");
+        String dailySalary = getSharedPreferences(ctx).getString("dailySalary", "-1");
         this.dailySalary = Double.parseDouble(dailySalary);
     }
 

@@ -35,7 +35,7 @@ public class SaveDataHelper {
     }
 
     private static String readFile(Context ctx) throws IOException {
-        System.out.println("dir is : " + ctx.getFilesDir());
+//        System.out.println("dir is : " + ctx.getFilesDir());
         FileInputStream fileInputStream = ctx.openFileInput(FILENAME);
         InputStreamReader isr = new InputStreamReader(fileInputStream);
         BufferedReader bufferedReader = new BufferedReader(isr);
@@ -84,6 +84,6 @@ public class SaveDataHelper {
     public static String getPrettyTimeString(double timeSpentAtWork) {
         int hours = (int) (timeSpentAtWork / 60 / 60);
         int minutes = (int) ((timeSpentAtWork / 60) % 60);
-        return hours + " hours" + " and " + minutes + " minutes";
+        return hours + "h" + " " + minutes + "m";
     }
 }

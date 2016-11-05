@@ -13,12 +13,23 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.leavjenn.smoothdaterangepicker.date.SmoothDateRangePickerFragment;
 import com.neura.resources.insights.DailySummaryCallbacks;
 import com.neura.resources.insights.DailySummaryData;
 import com.neura.resources.object.ActivityPlace;
 import com.neura.standalonesdk.service.NeuraApiClient;
 import com.neura.standalonesdk.util.SDKUtils;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -32,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String IS_FIRST_RUN = "isFirstRun";
     private static final String dateFormat = "MMM d";
+    public static final String URL = "https://wapi.theneura.com/v1/users/profile/daily_summary?date=";
 
     private Map<String, Double> datesToHours = new HashMap<>();
     int pendingAnswers = 0;
@@ -151,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
             textView.setText(Html.fromHtml("No data found for all the days since the beginning of the month"));
         } else {
             String time = getTextForData(timeSpentAtWork[0], daysCalculated[0]);
-            textView.setText(Html.fromHtml("Time spent at work from the beginning of the month: " + time));
+            textView.setText(Html.fromHtml("This month: " + time));
         }
     }
 
@@ -168,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
             textView.setText(Html.fromHtml("No data found for all the days since the beginning of the week"));
         } else {
             String time = getTextForData(timeSpentAtWork[0], daysCalculated[0]);
-            textView.setText(Html.fromHtml("Time spent at work this week: " + time));
+            textView.setText(Html.fromHtml("This week: " + time));
         }
     }
 
@@ -181,7 +193,7 @@ public class MainActivity extends AppCompatActivity {
         }
         String time = getTextForData(timeSpentAtWork, workingDays);
         if (textView != null) {
-            textView.setText(Html.fromHtml("Time spent at work today: " + time));
+            textView.setText(Html.fromHtml("Today: " + time));
         }
     }
 
@@ -245,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
             textView.setText(Html.fromHtml("No data was found for all the days between " + startString + " till " + endString));
         } else {
             String time = getTextForData(timeSpentAtWork[0], workingDays[0]);
-            textView.setText(Html.fromHtml("Time spent at work from " + startString + " till " + endString + ": " + time));
+            textView.setText(Html.fromHtml("From " + startString + " till " + endString + ": " + time));
         }
         resetCustom();
     }
@@ -256,26 +268,26 @@ public class MainActivity extends AppCompatActivity {
         customEnd = null;
     }
 
-    public void requestDailySummaryFromClient(final Date date) {
-        incPendingAnswers();
-//        System.out.println("getting data from server for " + date);
-        final String dateToday = new SimpleDateFormat("yyyy-MM-dd").format(date);
-
-        NeuraApiClient client = NeuraConnection.getClient();
-        client.getDailySummary(date.getTime(), new DailySummaryCallbacks() {
-            @Override
-            public void onSuccess(DailySummaryData dailySummaryData) {
-                double timeSpentAtWork = getTimeSpentAtWork(dailySummaryData);
-                handleResultForDay(timeSpentAtWork, dateToday);
-            }
-
-            @Override
-            public void onFailure(Bundle bundle, int i) {
-                decPendingAnswers();
-            }
-        });
-
-    }
+//    public void requestDailySummaryFromClient(final Date date) {
+//        incPendingAnswers();
+////        System.out.println("getting data from server for " + date);
+//        final String dateToday = new SimpleDateFormat("yyyy-MM-dd").format(date);
+//
+//        NeuraApiClient client = NeuraConnection.getClient();
+//        client.getDailySummary(date.getTime(), new DailySummaryCallbacks() {
+//            @Override
+//            public void onSuccess(DailySummaryData dailySummaryData) {
+//                double timeSpentAtWork = getTimeSpentAtWork(dailySummaryData);
+//                handleResultForDay(timeSpentAtWork, dateToday);
+//            }
+//
+//            @Override
+//            public void onFailure(Bundle bundle, int i) {
+//                decPendingAnswers();
+//            }
+//        });
+//
+//    }
 
     private void handleResultForDay(double timeSpentAtWork, String dateToday) {
 //        System.out.println("timeSpentAtWork: " + timeSpentAtWork / 60 / 60 + " hours");
@@ -294,7 +306,11 @@ public class MainActivity extends AppCompatActivity {
     private String getTextForData(double timeSpentAtWork, int workingDays) {
         String formatteedTime = SaveDataHelper.getPrettyTimeString(timeSpentAtWork);
         double salary = salaryCalculator.geySalaryForTime(timeSpentAtWork, getApplicationContext(), workingDays);
-        return "<b><font color=\"#007f00\">" + formatteedTime + "  - total " + salary + "$</font></b>";
+        if (salary == SalaryCalculator.EMPTY_VALUE) {
+            return "<b><font color=\"#007f00\">" + formatteedTime + "</font></b>";
+        } else {
+            return "<b><font color=\"#007f00\">" + formatteedTime + "  - total " + salary + "$</font></b>";
+        }
     }
 
     private double getTimeSpentAtWork(DailySummaryData dailySummaryData) {
@@ -310,12 +326,12 @@ public class MainActivity extends AppCompatActivity {
     private boolean getDataForDay(Date date) throws IOException {
 //        System.out.println("getting data for day: " + date);
         if (SaveDataHelper.isSameDay(date, new Date())) { // always ask for today
-            requestDailySummaryFromClient(date);
+            requestDailySummary(date);
             return false;
         }
         String stringDate = SaveDataHelper.getStringDate(date);
         if (!datesToHours.containsKey(stringDate)) {
-            requestDailySummaryFromClient(date);
+            requestDailySummary(date);
             return false;
         }
         return true;
@@ -330,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
         cal.setTime(current);
         while (current.before(lastDay) || SaveDataHelper.isSameDay(current, lastDay)) {
             Double currentVal = datesToHours.get(SaveDataHelper.getStringDate(current));
-            if (currentVal.equals(-1.0)) {
+            if (currentVal == null || currentVal.equals(-1.0)) {
                 timeSpentAtWork[0] = -1.0;
                 return;
             }
@@ -345,7 +361,10 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean askForDataForDatesOfMonth() throws IOException {
         Date current = DatesHelper.getFirstDateOfTheMonth();
-        return askForDataForDates(current, new Date());
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(current);
+        cal.add(Calendar.DATE, -8);
+        return askForDataForDates(cal.getTime(), new Date());
     }
 
     private synchronized boolean askForDataForDates(Date start, Date end) throws IOException {
@@ -370,5 +389,72 @@ public class MainActivity extends AppCompatActivity {
         } else {
             spinner.setVisibility(View.GONE);
         }
+    }
+
+    public void requestDailySummary(final Date date) {
+        incPendingAnswers();
+//        System.out.println("getting data from server for " + date);
+        RequestQueue queue = Volley.newRequestQueue(this);
+        final String dateToday = new SimpleDateFormat("yyyy-MM-dd").format(date);
+        String url = URL + dateToday;
+        StringRequest postRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+//                        System.out.println("Response" + response);
+                        try {
+                            double timeSpentAtWork = getTimeSpentAtWork(response);
+                            handleHttpResultForDay(timeSpentAtWork, dateToday);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            handleHttpResultForDay(-1.0, dateToday);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+//                        System.out.println("error => " + error.toString());
+                        decPendingAnswers();
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                String bearer = "Bearer " + NeuraConnection.getAccessToken(getApplicationContext());
+//                System.out.println("bearer: " + bearer);
+
+                params.put("Authorization", bearer);
+                return params;
+            }
+        };
+        queue.add(postRequest);
+    }
+
+    private void handleHttpResultForDay(double timeSpentAtWork, String dateToday) {
+//        System.out.println("timeSpentAtWork: " + timeSpentAtWork / 60 / 60 + " hours");
+        SaveDataHelper.addToFile(dateToday + ":" + timeSpentAtWork + ";", getApplicationContext());
+        datesToHours.put(dateToday, timeSpentAtWork);
+        decPendingAnswers();
+//        System.out.println("pendingAnswers-- now is: " + getPendingAnswers());
+        if (getPendingAnswers() == 0) {
+            if (isCustom) {
+                getCustomDataForDates(customStart, customEnd);
+            }
+            updateTextViews();
+        }
+    }
+
+    private double getTimeSpentAtWork(String dailySummaryJson) throws JSONException {
+        JSONObject json = new JSONObject(dailySummaryJson);
+        JSONArray jsonArray = json.getJSONObject("data").getJSONArray("visitedPlaces");
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject visitedPlace = jsonArray.getJSONObject(i);
+            if ("work".equals(visitedPlace.getString("label"))) {
+                return visitedPlace.getDouble("timeSpentAtPlace");
+            }
+        }
+        return 0;
     }
 }

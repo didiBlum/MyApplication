@@ -2,8 +2,8 @@
     <string name="app_name">Auto Work Log</string>
     <string name="app_uid_production">9d862fb23e82228c9bb6a35ba7a66ef5094e58dc175ffee7982e8043687ff701</string>
     <string name="app_secret_production">149e8af8df917914f145cedb4d68f36981feb7cbbebeb8046a8049b307de489c</string>
-    <string name="settings">Settings</string>
-    <string name="share">Share</string>
+    <string name="settings">Salary Settings (Beta)</string>
+    <string name="share">Send my log</string>
     <string name="statistics">Statistics</string>
     <string name="today">Today:</string>
     <string name="choose_custom_dates">Choose custom dates</string>
@@ -12,9 +12,10 @@
     <string name="this_week">This week:</string>
     <string name="how_much_i_apos_ve_made">$ How Much I\'ve Made $</string>
     <string name="welcome_to_auto_work_log">Welcome to Auto Work Log</string>
-    <string name="we_use_your_location_data_provided_by_neura_to_log_your_work_time_and_calculate_your_pay_check">We use your location data, provided by Neura to log your work time, and calculate your pay check.</string>
+    <string name="welcome_description">Auto work log will automatically log your work time, and help you calculate your pay check.\n\nWe use your data, securely collected by Neura, in order to make it all for you.
+    </string>
     <string name="let_apos_s_get_started">Let\'s get started!</string>
     <string name="hourly_salary">Hourly salary</string>
     <string name="additional_daily_transportation_meals">Additional daily (transportation, meals..)</string>
-    <string name="save">Save</string>
+    <string name="save">Get Stated</string>
 </resources>
