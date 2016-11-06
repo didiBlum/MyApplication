@@ -35,11 +35,8 @@ public class SalaryCalculator {
     }
 
     private boolean checkForEmpty() {
-        if ((hourSalary == null || hourSalary.equals(EMPTY_VALUE)) &&
-                dailySalary == null || dailySalary.equals(EMPTY_VALUE)){
-            return true;
-        }
-        return false;
+        return (hourSalary == null || hourSalary.equals(EMPTY_VALUE)) &&
+                dailySalary == null || dailySalary.equals(EMPTY_VALUE);
     }
 
     private void getSalaryValues(Context ctx) {

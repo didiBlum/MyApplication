@@ -4,18 +4,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_centerHorizontal="true"
-    android:paddingLeft="30dp"
-    android:paddingTop="30dp"
-    >
+    android:paddingLeft="20dp"
+    android:paddingTop="20dp"
+    android:baselineAligned="false"
+    android:paddingRight="20dp"
+    android:paddingBottom="20dp">
+
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:id="@+id/imageView3"
+        android:src="@drawable/logo"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="60dp"
+        android:contentDescription="@string/logo" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/welcome_to_auto_work_log"
         android:id="@+id/textView"
         android:textStyle="bold"
-        android:textSize="25sp"/>
+        android:textSize="35sp"
+        android:textColor="#00CCFC"
+        android:layout_gravity="center_horizontal" />
 
     <TextView
         android:layout_width="325dp"
@@ -23,24 +37,25 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/welcome_description"
         android:id="@+id/textView2"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:textStyle="bold"
-        android:textSize="25sp"/>
+        android:textSize="15sp"
+        android:textColor="#00CCFC"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/save"
         android:id="@+id/button"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="30dp"
         android:onClick="saveUserSalaryData"
         android:textSize="25sp"
         android:textAllCaps="false"
         android:textColor="#000000"
-
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"/>
+        android:layout_gravity="center_horizontal"
+        android:background="#00ffffff"
+        style="@style/Widget.AppCompat.Button.Borderless"/>
 
 </LinearLayout>

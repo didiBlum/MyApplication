@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                showWelcome();
+                startActivityForResult(new Intent(this, SaveSalaryDataActivity.class), 1);
                 return true;
             case R.id.action_share:
                 showShare();
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
     private void isFirstTime() {
         Boolean isFirstRun = getSharedPreferences(getApplicationContext())
                 .getBoolean(IS_FIRST_RUN, true);
-        if (isFirstRun || !salaryCalculator.isInitSalaryValues(getApplicationContext())) {
+        if (isFirstRun) {
             getSharedPreferences(getApplicationContext()).edit().putBoolean(IS_FIRST_RUN, false).commit();
             showWelcome();
         } else {
@@ -324,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
         if (salary == SalaryCalculator.EMPTY_VALUE) {
             return formatteedTime;
         } else {
-            return formatteedTime + "  - total " + salary + "$";
+            return formatteedTime + "- $" + salary;
         }
     }
 

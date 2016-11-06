@@ -17,30 +17,6 @@ public class WelcomeActivity extends Activity {
     }
 
     public void saveUserSalaryData(View view) {
-        SharedPreferences.Editor editor = getSharedPreferences(getApplicationContext()).edit();
-        putHourSalary(editor);
-        putDailySalary(editor);
-        editor.apply();
         finish();
-    }
-
-    private void putDailySalary(SharedPreferences.Editor editor) {
-//        EditText dailySalary = (EditText) this.findViewById(R.id.dailySalary);
-//        if (dailySalary.getText().length() > 0) {
-//            System.out.println("dailySalary is: " + dailySalary.getText().toString());
-//            editor.putString("dailySalary", dailySalary.getText().toString());
-//        }
-    }
-
-    private void putHourSalary(SharedPreferences.Editor editor) {
-//        EditText hourSalary = (EditText) this.findViewById(R.id.hourSalary);
-//        if (hourSalary.getText().length() > 0) {
-//            System.out.println("hourSalary is: " + hourSalary.getText().toString());
-//            editor.putString("hourSalary", hourSalary.getText().toString());
-//        }
-    }
-
-    private static SharedPreferences getSharedPreferences(Context ctx) {
-        return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 }
