@@ -20,32 +20,24 @@ public class NeuraEventsBroadcastReceiver extends BroadcastReceiver {
             NeuraEvent event = NeuraGCMCommandFactory.getInstance().getEvent(intent);
             String eventText = event != null ? event.toString() : "couldn't parse data";
             System.out.println("received Neura event - " + eventText);
-            if (event.getEventName().equals("userStartedDriving")) {
-                generateNotification(context, event, "Did you just started driving?", "Stop Pango!");
-            } else if (event.getEventName().equals("userGotUp")) {
-                generateNotification(context, event, "Good Morning", getRandomString());
+            if (event.getEventName().equals("userArrivedToWork")) {
+                generateNotification(context, event, "Arrived to work", "Have a great day");
+            } else if (event.getEventName().equals("userLeftWork")) {
+                generateNotification(context, event, "Left work", "See your daily working time");
             }
         }
     }
-
-    private String getRandomString() {
-        return null;
-    }
-
 
     private void generateNotification(Context context, NeuraEvent event, String title, String text) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setContentTitle(title)
                 .setContentText(text)
-                .setSmallIcon(R.drawable.neura_sdk_notification_status_icon)
+                .setSmallIcon(R.drawable.ic_launcher)
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), context.getApplicationInfo().icon))
                 .setAutoCancel(true)
                 .setWhen(System.currentTimeMillis())
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(event.getEventName()));
 
-        Uri hornSound = Uri.parse("android.resource://"
-                + context.getPackageName() + "/" + R.raw.horn);
-        builder.setSound(hornSound);
         Notification notification = builder.build();
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

@@ -26,6 +26,14 @@
         <activity android:name="com.adiBlum.adiblum.myapplication.StatisticsActivity"/>
         <activity android:name="com.adiBlum.adiblum.myapplication.SaveSalaryDataActivity"/>
 
+        <!--<service-->
+            <!--android:name=".FirebaseMessagingServiceImpl">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.google.firebase.MESSAGING_EVENT"/>-->
+            <!--</intent-filter>-->
+        <!--</service>-->
+
+
         <receiver
             android:name="com.adiBlum.adiblum.myapplication.NeuraEventsBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
@@ -34,6 +42,15 @@
                 <category android:name="com.example.adiblum.myapplication" />
             </intent-filter>
         </receiver>
+
+        <!--<receiver-->
+            <!--android:name="com.adiBlum.adiblum.myapplication.NeuraEventsBroadcastReceiver"-->
+            <!--android:enabled="true"-->
+            <!--android:exported="true">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="com.neura.android.ACTION_NEURA_STATE_ALERT" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
 
     </application>
 

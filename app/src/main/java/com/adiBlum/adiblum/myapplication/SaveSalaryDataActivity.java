@@ -19,9 +19,9 @@ public class SaveSalaryDataActivity extends Activity {
 
     private void initTextViewsWithVals() {
         EditText hourSalaryEditText = (EditText) this.findViewById(R.id.hourSalary);
-        hourSalaryEditText.setText(getSharedPreferences(getApplicationContext()).getString("hourSalary", "-1"));
+        hourSalaryEditText.setText(getSharedPreferences(getApplicationContext()).getString("hourSalary", "0"));
         EditText dailySalaryEditText = (EditText) this.findViewById(R.id.dailySalary);
-        dailySalaryEditText.setText(getSharedPreferences(getApplicationContext()).getString("dailySalary", "-1"));
+        dailySalaryEditText.setText(getSharedPreferences(getApplicationContext()).getString("dailySalary", "0"));
     }
 
     public void saveUserSalaryData(View view) {
@@ -41,7 +41,7 @@ public class SaveSalaryDataActivity extends Activity {
             editor.putString(attributeName, editText.getText().toString());
         }
         else {
-            editor.putString(attributeName, "-1");
+            editor.putString(attributeName, "0");
         }
     }
 

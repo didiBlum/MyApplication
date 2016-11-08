@@ -321,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
     private String getTextForData(double timeSpentAtWork, int workingDays) {
         String formatteedTime = SaveDataHelper.getPrettyTimeString(timeSpentAtWork);
         double salary = salaryCalculator.geySalaryForTime(timeSpentAtWork, getApplicationContext(), workingDays);
-        if (salary == SalaryCalculator.EMPTY_VALUE) {
+        if (salary <= SalaryCalculator.EMPTY_VALUE) {
             return formatteedTime;
         } else {
             return formatteedTime + "- $" + salary;
