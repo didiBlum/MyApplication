@@ -45,7 +45,7 @@ public class FirebaseMessagingServiceImpl extends FirebaseMessagingService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setContentTitle(title)
                 .setContentText(text)
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.drawable.ic_stat_icon)
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), context.getApplicationInfo().icon))
                 .setAutoCancel(true)
                 .setWhen(System.currentTimeMillis())
