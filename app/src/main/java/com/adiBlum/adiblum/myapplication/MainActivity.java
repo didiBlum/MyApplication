@@ -136,7 +136,6 @@ public class MainActivity extends AppCompatActivity {
         updateToday();
         updateWeek();
         updateMonth();
-//        showGragh();
 
         showSpinner(false);
         resetPendingAnswers();
@@ -146,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
         final int[] daysCalculated = {0};
         final Double[] timeSpentAtWork = {0.0};
         TextView textView = (TextView) mainActivity.findViewById(R.id.monthlyTextview);
-
+        TextView titleView = (TextView) mainActivity.findViewById(R.id.monthly_title_textview);
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.clear(Calendar.MINUTE);
@@ -156,14 +155,18 @@ public class MainActivity extends AppCompatActivity {
         // get start of the month
         cal.set(Calendar.DAY_OF_MONTH, 1);
         Date current = cal.getTime();
-        collectData(daysCalculated, timeSpentAtWork, current);
+        setTextviewForValues(daysCalculated, timeSpentAtWork, textView, titleView, current);
+    }
 
+    private void setTextviewForValues(int[] daysCalculated, Double[] timeSpentAtWork, TextView textView, TextView titleView, Date current) {
+        boolean missingData = collectData(daysCalculated, timeSpentAtWork, current);
         assert textView != null;
-        if (timeSpentAtWork[0].equals(-1.0)) {
-            textView.setText(Html.fromHtml("No data found for all the days since the beginning of the month"));
-        } else {
-            String time = getTextForData(timeSpentAtWork[0], daysCalculated[0]);
-            textView.setText(time);
+        String time = getTextForData(timeSpentAtWork[0], daysCalculated[0]);
+        textView.setText(time);
+        if (missingData) {
+            Date earliestDate = getEarliestDateMissingData(current, new Date());
+            assert titleView != null;
+            titleView.setText(R.string.this_month + "(since " + new SimpleDateFormat(dateFormat).format(earliestDate) + ")");
         }
     }
 
@@ -175,13 +178,8 @@ public class MainActivity extends AppCompatActivity {
         Date current = cal.getTime();   //start with begging of week
         collectData(daysCalculated, timeSpentAtWork, current);
         TextView textView = (TextView) mainActivity.findViewById(R.id.weeklyTextView);
-        assert textView != null;
-        if (timeSpentAtWork[0].equals(-1.0)) {
-            textView.setText(Html.fromHtml("No data found for all the days since the beginning of the week"));
-        } else {
-            String time = getTextForData(timeSpentAtWork[0], daysCalculated[0]);
-            textView.setText(time);
-        }
+        TextView titleView = (TextView) mainActivity.findViewById(R.id.weekly_title_textview);
+        setTextviewForValues(daysCalculated, timeSpentAtWork, textView, titleView, current);
     }
 
     private void updateToday() {
@@ -352,26 +350,42 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void collectData(int[] workingDays, Double[] timeSpentAtWork, Date current) {
-        collectDataBetweenDates(workingDays, timeSpentAtWork, current, new Date());
+    private Date getEarliestDateMissingData(Date start, Date end) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(end);
+        while (end.before(start) || SaveDataHelper.isSameDay(start, end)) {
+            Double currentVal = datesToHours.get(SaveDataHelper.getStringDate(end));
+            if (currentVal == null || currentVal.equals(-1.0)) {
+                return end;
+            }
+            cal.add(Calendar.DAY_OF_YEAR, -1);
+            end = cal.getTime();
+        }
+        return null;
     }
 
-    private void collectDataBetweenDates(int[] workingDays, Double[] timeSpentAtWork, Date current, Date lastDay) {
+    private boolean collectData(int[] workingDays, Double[] timeSpentAtWork, Date current) {
+        return collectDataBetweenDates(workingDays, timeSpentAtWork, current, new Date());
+    }
+
+    // is data missing
+    private boolean collectDataBetweenDates(int[] workingDays, Double[] timeSpentAtWork,
+                                            Date start, Date end) {
         Calendar cal = Calendar.getInstance();
-        cal.setTime(current);
-        while (current.before(lastDay) || SaveDataHelper.isSameDay(current, lastDay)) {
-            Double currentVal = datesToHours.get(SaveDataHelper.getStringDate(current));
+        cal.setTime(end);
+        while (end.after(start) || SaveDataHelper.isSameDay(start, end)) {
+            Double currentVal = datesToHours.get(SaveDataHelper.getStringDate(end));
             if (currentVal == null || currentVal.equals(-1.0)) {
-                timeSpentAtWork[0] = -1.0;
-                return;
+                return true;
             }
             timeSpentAtWork[0] += currentVal;
             if (currentVal > 0) {
                 workingDays[0]++;
             }
-            cal.add(Calendar.DAY_OF_YEAR, 1);
-            current = cal.getTime();
+            cal.add(Calendar.DAY_OF_YEAR, -1);
+            end = cal.getTime();
         }
+        return false;
     }
 
     private boolean askForDataForDatesOfMonth() throws IOException {
