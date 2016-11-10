@@ -26,12 +26,12 @@
         <activity android:name="com.adiBlum.adiblum.myapplication.StatisticsActivity"/>
         <activity android:name="com.adiBlum.adiblum.myapplication.SaveSalaryDataActivity"/>
 
-        <!--<service-->
-            <!--android:name=".FirebaseMessagingServiceImpl">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.google.firebase.MESSAGING_EVENT"/>-->
-            <!--</intent-filter>-->
-        <!--</service>-->
+        <service
+            android:name=".FirebaseMessagingServiceImpl">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
 
 
         <receiver
@@ -42,6 +42,8 @@
                 <category android:name="com.example.adiblum.myapplication" />
             </intent-filter>
         </receiver>
+
+
 
         <!--<receiver-->
             <!--android:name="com.adiBlum.adiblum.myapplication.NeuraEventsBroadcastReceiver"-->

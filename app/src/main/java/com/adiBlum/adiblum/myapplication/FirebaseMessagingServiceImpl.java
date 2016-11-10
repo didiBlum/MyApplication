@@ -11,6 +11,8 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.neura.standalonesdk.events.NeuraEvent;
 import com.neura.standalonesdk.events.NeuraPushCommandFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class FirebaseMessagingServiceImpl extends FirebaseMessagingService {
@@ -23,12 +25,21 @@ public class FirebaseMessagingServiceImpl extends FirebaseMessagingService {
             String eventText = event != null ? event.toString() : "couldn't parse data";
             System.out.println("received Neura event - " + eventText);
             if (event.getEventName().equals("userArrivedToWork")) {
-                generateNotification(getApplicationContext(), event, "Arrived to work", "Have a great day");
+                generateNotification(getApplicationContext(), event, "Arrived to work", "Have a great day!");
             } else if (event.getEventName().equals("userLeftWork")) {
                 generateNotification(getApplicationContext(), event, "Left work", "See your daily working time");
             }
         }
     }
+
+//    private String getArrivedToWorkMessage(){
+//        List<String> messages = new ArrayList<>();
+//        messages.add("Have a great day!");
+//        messages.add("");
+//        messages.add("");
+//        messages.add("");
+//        messages.add("");
+//    }
 
     private void generateNotification(Context context, NeuraEvent event, String title, String text) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
