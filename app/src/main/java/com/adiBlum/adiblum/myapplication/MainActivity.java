@@ -21,10 +21,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.leavjenn.smoothdaterangepicker.date.SmoothDateRangePickerFragment;
-import com.neura.resources.insights.DailySummaryCallbacks;
 import com.neura.resources.insights.DailySummaryData;
 import com.neura.resources.object.ActivityPlace;
-import com.neura.standalonesdk.service.NeuraApiClient;
 import com.neura.standalonesdk.util.SDKUtils;
 
 import org.json.JSONArray;
@@ -32,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,7 +41,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     private static final String IS_FIRST_RUN = "isFirstRun";
-    private static final String dateFormat = "MMM d";
+    public static final String dateFormat = "MMM d";
     public static final String URL = "https://wapi.theneura.com/v1/users/profile/daily_summary?date=";
 
     private Map<String, Double> datesToHours = new HashMap<>();
@@ -75,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.action_share:
                 showShare();
+                return true;
+            case R.id.action_history:
+                startActivity(new Intent(this, HistoryActivity.class).putExtra("data", (Serializable)datesToHours));
                 return true;
         }
         return true;

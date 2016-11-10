@@ -25,6 +25,7 @@
         <activity android:name="com.adiBlum.adiblum.myapplication.WelcomeActivity"/>
         <activity android:name="com.adiBlum.adiblum.myapplication.StatisticsActivity"/>
         <activity android:name="com.adiBlum.adiblum.myapplication.SaveSalaryDataActivity"/>
+        <activity android:name="com.adiBlum.adiblum.myapplication.HistoryActivity"/>
 
         <service
             android:name=".FirebaseMessagingServiceImpl">
