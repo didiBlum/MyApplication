@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
         if (missingData) {
             Date earliestDate = getEarliestDateMissingData(current, new Date());
             assert titleView != null;
-            titleView.setText(R.string.this_month + "(since " + new SimpleDateFormat(dateFormat).format(earliestDate) + ")");
+            titleView.setText(titleView.getText() + " (since " + new SimpleDateFormat(dateFormat).format(earliestDate) + ")");
         }
     }
 
@@ -353,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
     private Date getEarliestDateMissingData(Date start, Date end) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(end);
-        while (end.before(start) || SaveDataHelper.isSameDay(start, end)) {
+        while (end.after(start) || SaveDataHelper.isSameDay(start, end)) {
             Double currentVal = datesToHours.get(SaveDataHelper.getStringDate(end));
             if (currentVal == null || currentVal.equals(-1.0)) {
                 return end;
