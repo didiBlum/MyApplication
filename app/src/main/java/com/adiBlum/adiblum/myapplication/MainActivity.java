@@ -142,8 +142,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateMonth() {
-        final int[] daysCalculated = {0};
-        final Double[] timeSpentAtWork = {0.0};
         TextView textView = (TextView) mainActivity.findViewById(R.id.monthlyTextview);
         TextView titleView = (TextView) mainActivity.findViewById(R.id.monthly_title_textview);
         Calendar cal = Calendar.getInstance();
@@ -155,31 +153,30 @@ public class MainActivity extends AppCompatActivity {
         // get start of the month
         cal.set(Calendar.DAY_OF_MONTH, 1);
         Date current = cal.getTime();
-        setTextviewForValues(daysCalculated, timeSpentAtWork, textView, titleView, current);
+        setTextviewForValues(textView, titleView, current);
     }
 
-    private void setTextviewForValues(int[] daysCalculated, Double[] timeSpentAtWork, TextView textView, TextView titleView, Date current) {
-        boolean missingData = collectData(daysCalculated, timeSpentAtWork, current);
+    private void setTextviewForValues(TextView textView, TextView titleView, Date start) {
+        final int[] daysCalculated = {0};
+        final Double[] timeSpentAtWork = {0.0};
+        boolean missingData = collectData(daysCalculated, timeSpentAtWork, start);
         assert textView != null;
         String time = getTextForData(timeSpentAtWork[0], daysCalculated[0]);
         textView.setText(time);
         if (missingData) {
-            Date earliestDate = getEarliestDateMissingData(current, new Date());
+            Date earliestDate = getEarliestDateMissingData(start, new Date());
             assert titleView != null;
             titleView.setText(titleView.getText() + " (since " + new SimpleDateFormat(dateFormat).format(earliestDate) + ")");
         }
     }
 
     private void updateWeek() {
-        final int[] daysCalculated = {0};
-        final Double[] timeSpentAtWork = {0.0};
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_WEEK, Calendar.getInstance().getFirstDayOfWeek());
         Date current = cal.getTime();   //start with begging of week
-        collectData(daysCalculated, timeSpentAtWork, current);
         TextView textView = (TextView) mainActivity.findViewById(R.id.weeklyTextView);
         TextView titleView = (TextView) mainActivity.findViewById(R.id.weekly_title_textview);
-        setTextviewForValues(daysCalculated, timeSpentAtWork, textView, titleView, current);
+        setTextviewForValues(textView, titleView, current);
     }
 
     private void updateToday() {
@@ -356,7 +353,8 @@ public class MainActivity extends AppCompatActivity {
         while (end.after(start) || SaveDataHelper.isSameDay(start, end)) {
             Double currentVal = datesToHours.get(SaveDataHelper.getStringDate(end));
             if (currentVal == null || currentVal.equals(-1.0)) {
-                return end;
+                cal.add(Calendar.DAY_OF_YEAR, 1);
+                return cal.getTime();
             }
             cal.add(Calendar.DAY_OF_YEAR, -1);
             end = cal.getTime();
