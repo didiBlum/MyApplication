@@ -1,18 +1,27 @@
 package com.adiBlum.adiblum.myapplication;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.adiBlum.adiblum.myapplication.helpers.DatesHelper;
+import com.adiBlum.adiblum.myapplication.helpers.SalaryCalculator;
+import com.adiBlum.adiblum.myapplication.helpers.SaveDataHelper;
+import com.adiBlum.adiblum.myapplication.helpers.ShareHelper;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -21,10 +30,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.leavjenn.smoothdaterangepicker.date.SmoothDateRangePickerFragment;
-import com.neura.resources.insights.DailySummaryCallbacks;
 import com.neura.resources.insights.DailySummaryData;
 import com.neura.resources.object.ActivityPlace;
-import com.neura.standalonesdk.service.NeuraApiClient;
 import com.neura.standalonesdk.util.SDKUtils;
 
 import org.json.JSONArray;
@@ -39,7 +46,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class SummaryActivity extends Fragment {
 
     private static final String IS_FIRST_RUN = "isFirstRun";
     private static final String dateFormat = "MMM d";
@@ -47,31 +54,42 @@ public class MainActivity extends AppCompatActivity {
 
     private Map<String, Double> datesToHours = new HashMap<>();
     int pendingAnswers = 0;
-    private MainActivity mainActivity;
+    private View summaryActivity;
     private SalaryCalculator salaryCalculator = new SalaryCalculator();
     private boolean isCustom = false;
     private Date customStart = null;
     private Date customEnd = null;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_with_cells);
-        isFirstTime();
-    }
+    //    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_with_cells);
+//        isFirstTime();
+//    }
+//    @Override
+//    public void onAttach(Activity activity) {
+//        super.onAttach(activity);
+////        summaryActivity = (FragmentActivity) activity;
+//    }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+//        summaryActivity = super.getActivity();
+        View view = inflater.inflate(R.layout.activity_with_cells, container, false);
+        summaryActivity = view;
+        isFirstTime();
+        return view;
+    }
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                startActivityForResult(new Intent(this, SaveSalaryDataActivity.class), 1);
+                startActivityForResult(new Intent(getActivity(), SaveSalaryDataActivity.class), 1);
                 return true;
             case R.id.action_share:
                 showShare();
@@ -86,12 +104,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void mainFlow() {
-        mainActivity = this;
-        datesToHours = SaveDataHelper.getDataFromFile(getApplicationContext());
+        datesToHours = SaveDataHelper.getDataFromFile(getActivity().getApplicationContext());
 
-        NeuraConnection.initNeuraConnection(this);
-        if (!SDKUtils.isConnected(this, NeuraConnection.getmNeuraApiClient())) {
-            NeuraConnection.authenticateNeura(this, mainActivity);
+        NeuraConnection.initNeuraConnection(getActivity());
+        if (!SDKUtils.isConnected(getActivity(), NeuraConnection.getmNeuraApiClient())) {
+//            NeuraConnection.authenticateNeura(getActivity(), summaryActivity);
         } else {
             showData();
         }
@@ -102,10 +119,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void isFirstTime() {
-        Boolean isFirstRun = getSharedPreferences(getApplicationContext())
+        Boolean isFirstRun = getSharedPreferences(getActivity().getApplicationContext())
                 .getBoolean(IS_FIRST_RUN, true);
         if (isFirstRun) {
-            getSharedPreferences(getApplicationContext()).edit().putBoolean(IS_FIRST_RUN, false).commit();
+            getSharedPreferences(getActivity().getApplicationContext()).edit().putBoolean(IS_FIRST_RUN, false).commit();
             showWelcome();
         } else {
             mainFlow();
@@ -113,10 +130,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showWelcome() {
-        startActivityForResult(new Intent(this, WelcomeActivity.class), 0);
+        startActivityForResult(new Intent(getActivity(), WelcomeActivity.class), 0);
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         mainFlow();
     }
 
@@ -142,8 +159,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateMonth() {
-        TextView textView = (TextView) mainActivity.findViewById(R.id.monthlyTextview);
-        TextView titleView = (TextView) mainActivity.findViewById(R.id.monthly_title_textview);
+        TextView textView = (TextView) summaryActivity.findViewById(R.id.monthlyTextview);
+        TextView titleView = (TextView) summaryActivity.findViewById(R.id.monthly_title_textview);
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.clear(Calendar.MINUTE);
@@ -174,13 +191,13 @@ public class MainActivity extends AppCompatActivity {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_WEEK, Calendar.getInstance().getFirstDayOfWeek());
         Date current = cal.getTime();   //start with begging of week
-        TextView textView = (TextView) mainActivity.findViewById(R.id.weeklyTextView);
-        TextView titleView = (TextView) mainActivity.findViewById(R.id.weekly_title_textview);
+        TextView textView = (TextView) summaryActivity.findViewById(R.id.weeklyTextView);
+        TextView titleView = (TextView) summaryActivity.findViewById(R.id.weekly_title_textview);
         setTextviewForValues(textView, titleView, current);
     }
 
     private void updateToday() {
-        TextView textView = (TextView) mainActivity.findViewById(R.id.dailyTextView);
+        TextView textView = (TextView) summaryActivity.findViewById(R.id.dailyTextView);
         Double timeSpentAtWork = datesToHours.get(SaveDataHelper.getStringDate(new Date()));
         int workingDays = 0;
         if (timeSpentAtWork > 0) {
@@ -221,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        smoothDateRangePickerFragment.show(getFragmentManager(), "smoothDateRangePicker");
+        smoothDateRangePickerFragment.show(getActivity().getFragmentManager(), "smoothDateRangePicker");
     }
 
     private void setCustomDates(int yearStart, int monthStart, int dayStart, int yearEnd, int monthEnd, int dayEnd) {
@@ -242,8 +259,8 @@ public class MainActivity extends AppCompatActivity {
     private void getCustomDataForDates(Date startDate, Date endDate) {
         final int[] workingDays = {0};
         final Double[] timeSpentAtWork = {0.0};
-        TextView customDataTextView = (TextView) mainActivity.findViewById(R.id.customTextView);
-        TextView customTitleTextview = (TextView) mainActivity.findViewById(R.id.custom_title_textview);
+        TextView customDataTextView = (TextView) summaryActivity.findViewById(R.id.customTextView);
+        TextView customTitleTextview = (TextView) summaryActivity.findViewById(R.id.custom_title_textview);
         assert customDataTextView != null;
         customDataTextView.setVisibility(View.VISIBLE);
         String startString = new SimpleDateFormat(dateFormat).format(startDate);
@@ -266,16 +283,6 @@ public class MainActivity extends AppCompatActivity {
         isCustom = false;
         customStart = null;
         customEnd = null;
-    }
-
-    public void removeCustom(View view) {
-        TextView customTitleTextview = (TextView) mainActivity.findViewById(R.id.custom_title_textview);
-        assert customTitleTextview != null;
-        customTitleTextview.setText(R.string.custom_date);
-        TextView customDataTextView = (TextView) mainActivity.findViewById(R.id.customTextView);
-        assert customDataTextView != null;
-        customDataTextView.setVisibility(View.INVISIBLE);
-
     }
 
 //    public void requestDailySummaryFromClient(final Date date) {
@@ -301,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleResultForDay(double timeSpentAtWork, String dateToday) {
 //        System.out.println("timeSpentAtWork: " + timeSpentAtWork / 60 / 60 + " hours");
-        SaveDataHelper.addToFile(dateToday + ":" + timeSpentAtWork + ";", getApplicationContext());
+        SaveDataHelper.addToFile(dateToday + ":" + timeSpentAtWork + ";", getActivity().getApplicationContext());
         datesToHours.put(dateToday, timeSpentAtWork);
         decPendingAnswers();
 //        System.out.println("pendingAnswers-- now is: " + getPendingAnswers());
@@ -315,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String getTextForData(double timeSpentAtWork, int workingDays) {
         String formatteedTime = SaveDataHelper.getPrettyTimeString(timeSpentAtWork);
-        double salary = salaryCalculator.geySalaryForTime(timeSpentAtWork, getApplicationContext(), workingDays);
+        double salary = salaryCalculator.geySalaryForTime(timeSpentAtWork, getActivity().getApplicationContext(), workingDays);
         if (salary == SalaryCalculator.EMPTY_VALUE) {
             return formatteedTime;
         } else {
@@ -409,7 +416,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showSpinner(boolean showSpinner) {
-        ProgressBar spinner = (ProgressBar) mainActivity.findViewById(R.id.progressBar1);
+        ProgressBar spinner = (ProgressBar) summaryActivity.findViewById(R.id.progressBar1);
         assert spinner != null;
         if (showSpinner) {
             spinner.setVisibility(View.VISIBLE);
@@ -421,7 +428,7 @@ public class MainActivity extends AppCompatActivity {
     public void requestDailySummary(final Date date) {
         incPendingAnswers();
 //        System.out.println("getting data from server for " + date);
-        RequestQueue queue = Volley.newRequestQueue(this);
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
         final String dateToday = new SimpleDateFormat("yyyy-MM-dd").format(date);
         String url = URL + dateToday;
         StringRequest postRequest = new StringRequest(Request.Method.GET, url,
@@ -449,7 +456,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                String bearer = "Bearer " + NeuraConnection.getAccessToken(getApplicationContext());
+                String bearer = "Bearer " + NeuraConnection.getAccessToken(getActivity().getApplicationContext());
 //                System.out.println("bearer: " + bearer);
 
                 params.put("Authorization", bearer);
@@ -461,7 +468,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleHttpResultForDay(double timeSpentAtWork, String dateToday) {
 //        System.out.println("timeSpentAtWork: " + timeSpentAtWork / 60 / 60 + " hours");
-        SaveDataHelper.addToFile(dateToday + ":" + timeSpentAtWork + ";", getApplicationContext());
+        SaveDataHelper.addToFile(dateToday + ":" + timeSpentAtWork + ";", getActivity().getApplicationContext());
         datesToHours.put(dateToday, timeSpentAtWork);
         decPendingAnswers();
 //        System.out.println("pendingAnswers-- now is: " + getPendingAnswers());

@@ -1,4 +1,4 @@
-package com.adiBlum.adiblum.myapplication;
+package com.adiBlum.adiblum.myapplication.helpers;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

@@ -42,7 +42,7 @@ public class NeuraConnection {
         mNeuraApiClient.connect(); //Mandatory
     }
 
-    public static void authenticateNeura(final Context ctx, final MainActivity mainActivity) {
+    public static void authenticateNeura(final Context ctx, final SummaryActivity summaryActivity) {
         mNeuraApiClient.getAppPermissions(new GetPermissionsRequestCallbacks() {
             @Override
             public IBinder asBinder() {
@@ -70,7 +70,7 @@ public class NeuraConnection {
                                 String userToken = authenticateData.getAccessToken();
                                 saveAccessToken(userToken);
                                 setAction(ctx);
-                                mainActivity.showData();
+                                summaryActivity.showData();
                             }
 
                             private void saveAccessToken(String userToken) {
