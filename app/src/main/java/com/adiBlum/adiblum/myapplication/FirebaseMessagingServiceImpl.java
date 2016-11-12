@@ -2,37 +2,50 @@ package com.adiBlum.adiblum.myapplication;
 
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 import com.neura.standalonesdk.events.NeuraEvent;
-import com.neura.standalonesdk.events.NeuraGCMCommandFactory;
+import com.neura.standalonesdk.events.NeuraPushCommandFactory;
 
-public class NeuraEventsBroadcastReceiver extends BroadcastReceiver {
-    private static final String TAG = "NeuraEventsReceiver";
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-    public void onReceive(Context context, Intent intent) {
-        if (NeuraGCMCommandFactory.getInstance().isNeuraEvent(intent)) {
-            NeuraEvent event = NeuraGCMCommandFactory.getInstance().getEvent(intent);
+public class FirebaseMessagingServiceImpl extends FirebaseMessagingService {
+
+    @Override
+    public void onMessageReceived(RemoteMessage message) {
+        Map data = message.getData();
+        if (NeuraPushCommandFactory.getInstance().isNeuraEvent(data)) {
+            NeuraEvent event = NeuraPushCommandFactory.getInstance().getEvent(data);
             String eventText = event != null ? event.toString() : "couldn't parse data";
             System.out.println("received Neura event - " + eventText);
             if (event.getEventName().equals("userArrivedToWork")) {
-                generateNotification(context, event, "Arrived to work", "Have a great day");
+                generateNotification(getApplicationContext(), event, "Arrived to work", "Have a great day!");
             } else if (event.getEventName().equals("userLeftWork")) {
-                generateNotification(context, event, "Left work", "See your daily working time");
+                generateNotification(getApplicationContext(), event, "Left work", "See your daily working time");
             }
         }
     }
+
+//    private String getArrivedToWorkMessage(){
+//        List<String> messages = new ArrayList<>();
+//        messages.add("Have a great day!");
+//        messages.add("");
+//        messages.add("");
+//        messages.add("");
+//        messages.add("");
+//    }
 
     private void generateNotification(Context context, NeuraEvent event, String title, String text) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setContentTitle(title)
                 .setContentText(text)
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.drawable.ic_stat_icon)
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), context.getApplicationInfo().icon))
                 .setAutoCancel(true)
                 .setWhen(System.currentTimeMillis())

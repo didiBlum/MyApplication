@@ -28,8 +28,9 @@
         android:id="@+id/textView"
         android:textStyle="bold"
         android:textSize="35sp"
-        android:textColor="#00CCFC"
-        android:layout_gravity="center_horizontal" />
+        android:textColor="#29ABE1"
+        android:layout_gravity="center_horizontal"
+        />
 
     <TextView
         android:layout_width="325dp"
@@ -40,7 +41,7 @@
         android:layout_marginTop="20dp"
         android:textStyle="bold"
         android:textSize="15sp"
-        android:textColor="#00CCFC"
+        android:textColor="#29ABE1"
         android:layout_gravity="center_horizontal"
         android:gravity="center"/>
 
@@ -51,11 +52,16 @@
         android:id="@+id/button"
         android:layout_marginTop="30dp"
         android:onClick="saveUserSalaryData"
-        android:textSize="25sp"
-        android:textAllCaps="false"
-        android:textColor="#000000"
+        android:textSize="14sp"
+        android:textAllCaps="true"
+        android:textColor="#ffffff"
         android:layout_gravity="center_horizontal"
-        android:background="#00ffffff"
-        style="@style/Widget.AppCompat.Button.Borderless"/>
+        android:elevation="2dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:background="#29ABE1"
+        android:typeface="monospace"
+         />
 
 </LinearLayout>

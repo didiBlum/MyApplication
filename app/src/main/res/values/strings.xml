@@ -20,4 +20,5 @@
     <string name="save">Get Started</string>
     <string name="save_salary">Save</string>
     <string name="logo">logo</string>
+    <string name="history_action_name">History</string>
 </resources>
