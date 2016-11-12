@@ -1,4 +1,4 @@
-package com.adiBlum.adiblum.myapplication;
+package com.adiBlum.adiblum.myapplication.helpers;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

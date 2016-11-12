@@ -11,14 +11,12 @@ import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.neura.resources.authentication.AuthenticateCallback;
 import com.neura.resources.authentication.AuthenticateData;
 import com.neura.resources.data.PickerCallback;
 import com.neura.sdk.callbacks.GetPermissionsRequestCallbacks;
 import com.neura.sdk.object.AuthenticationRequest;
 import com.neura.sdk.object.Permission;
-import com.neura.sdk.service.SubscriptionRequestCallbacks;
 import com.neura.standalonesdk.service.NeuraApiClient;
 import com.neura.standalonesdk.util.Builder;
 import com.neura.standalonesdk.util.SDKUtils;
@@ -44,7 +42,7 @@ public class NeuraConnection {
         mNeuraApiClient.connect(); //Mandatory
     }
 
-    public static void authenticateNeura(final Context ctx, final MainActivity mainActivity) {
+    public static void authenticateNeura(final Context ctx, final MainActivityNew mainActivityNew) {
         mNeuraApiClient.getAppPermissions(new GetPermissionsRequestCallbacks() {
             @Override
             public IBinder asBinder() {
@@ -58,7 +56,7 @@ public class NeuraConnection {
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
-                        final ArrayList<Permission> mPermissions = new ArrayList<>(permissions);
+                        ArrayList<Permission> mPermissions = new ArrayList<>(permissions);
                         AuthenticationRequest mAuthenticateRequest = new AuthenticationRequest();
                         mAuthenticateRequest.setAppId(mNeuraApiClient.getAppUid());
                         mAuthenticateRequest.setAppSecret(mNeuraApiClient.getAppSecret());
@@ -72,11 +70,7 @@ public class NeuraConnection {
                                 String userToken = authenticateData.getAccessToken();
                                 saveAccessToken(userToken);
                                 setAction(ctx);
-                                subscribeToEvents(mPermissions);
-                                mNeuraApiClient.registerFirebaseToken(
-                                        mainActivity, FirebaseInstanceId.getInstance().getToken());
-                                System.out.println("token is: " + FirebaseInstanceId.getInstance().getToken());
-                                mainActivity.showData();
+                                mainActivityNew.showData();
                             }
 
                             private void saveAccessToken(String userToken) {
@@ -129,26 +123,6 @@ public class NeuraConnection {
 
     public static NeuraApiClient getClient() {
         return mNeuraApiClient;
-    }
-
-    private static void subscribeToEvents(ArrayList<Permission> mPermissions) {
-        for (int i = 0; i < mPermissions.size(); i++) {
-            mNeuraApiClient.subscribeToEvent(mPermissions.get(i).getName(),
-                    "YourEventIdentifier_" + mPermissions.get(i).getName(), true,
-                    new SubscriptionRequestCallbacks() {
-                        @Override
-                        public void onSuccess(String eventName, Bundle bundle, String s1) {
-                            Log.i(getClass().getSimpleName(),
-                                    "Successfully subscribed to event " + eventName);
-                        }
-
-                        @Override
-                        public void onFailure(String eventName, Bundle bundle, int i) {
-                            Log.e(getClass().getSimpleName(),
-                                    "Failed to subscribe to event " + eventName);
-                        }
-                    });
-        }
     }
 
 }

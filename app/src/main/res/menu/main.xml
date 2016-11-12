@@ -15,5 +15,11 @@
         android:title="@string/settings"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_history"
+        android:orderInCategory="100"
+        android:title="@string/history_action_name"
+        app:showAsAction="never" />
+
 
 </menu>

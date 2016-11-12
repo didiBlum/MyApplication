@@ -1,4 +1,4 @@
-package com.adiBlum.adiblum.myapplication;
+package com.adiBlum.adiblum.myapplication.helpers;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -82,8 +82,12 @@ public class SaveDataHelper {
 
     @NonNull
     public static String getPrettyTimeString(double timeSpentAtWork) {
-        int hours = (int) (timeSpentAtWork / 60 / 60);
-        int minutes = (int) ((timeSpentAtWork / 60) % 60);
-        return hours + "h" + " " + minutes + "m";
+        if (timeSpentAtWork > 0) {
+            int hours = (int) (timeSpentAtWork / 60 / 60);
+            int minutes = (int) ((timeSpentAtWork / 60) % 60);
+            return hours + "h" + " " + minutes + "m";
+        } else if (timeSpentAtWork == 0) {
+            return "Out of work";
+        } else return "No data";
     }
 }
