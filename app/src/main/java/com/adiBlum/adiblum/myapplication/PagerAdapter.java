@@ -6,6 +6,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs;
+    SummaryActivity summaryActivity = new SummaryActivity();
+    HistoryActivity historyActivity = new HistoryActivity();
 
     public PagerAdapter(FragmentManager fm, int NumOfTabs) {
         super(fm);
@@ -16,9 +18,9 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new SummaryActivity();
+                return summaryActivity;
             case 1:
-                return new HistoryActivity();
+                return historyActivity;
             default:
                 return null;
         }

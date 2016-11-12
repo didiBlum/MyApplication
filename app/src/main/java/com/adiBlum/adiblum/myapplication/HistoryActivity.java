@@ -1,17 +1,13 @@
 package com.adiBlum.adiblum.myapplication;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.adiBlum.adiblum.myapplication.helpers.DatesHelper;
@@ -30,22 +26,22 @@ public class HistoryActivity extends Fragment {
     private static final String dateFormat = "EEE, MMM d";
 
     private View view;
+    Map<String, Double> data;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.getActivity();
         view = inflater.inflate(R.layout.history_list, container, false);
-        final ListView listview = (ListView) view.findViewById(R.id.history_listView);
-//        setList(listview);
-
         return view;
     }
 
+    public void start(Map<String, Double> data) {
+        final ListView listview = (ListView) view.findViewById(R.id.history_listView);
+        this.data = data;
+        setList(listview);
+    }
 
     private void setList(ListView listview) {
-        Intent intent = getActivity().getIntent();
-        Map<String, Double> data = (Map<String, Double>)intent.getSerializableExtra("data");
-
         Date current = DatesHelper.getFirstDateOfTheMonth();
         Calendar cal = Calendar.getInstance();
         cal.setTime(current);
