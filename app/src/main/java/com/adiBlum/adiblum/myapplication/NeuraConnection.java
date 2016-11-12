@@ -100,7 +100,7 @@ public class NeuraConnection {
     private static void setAction(final Context ctx) {
 
 //        if (SDKUtils.isConnected(ctx, mNeuraApiClient)) {
-        String eventName = "userLeftWork";
+        String eventName = "userArrivedToWork";
         if (mNeuraApiClient.isMissingDataForEvent(eventName)) { //1
             mNeuraApiClient.getMissingDataForEvent(eventName, new PickerCallback() {
                 @Override

@@ -16,7 +16,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name="com.adiBlum.adiblum.myapplication.MainActivityNew">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -34,6 +33,13 @@
                 <category android:name="com.example.adiblum.myapplication" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name=".FirebaseMessagingServiceImpl">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
 
     </application>
 
