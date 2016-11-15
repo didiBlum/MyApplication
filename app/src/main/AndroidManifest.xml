@@ -34,6 +34,15 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".HandleNeuraStateAlertReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.neura.android.ACTION_NEURA_STATE_ALERT" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".FirebaseMessagingServiceImpl">
             <intent-filter>

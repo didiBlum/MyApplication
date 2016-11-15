@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class MainActivityNew extends AppCompatActivity {
@@ -56,6 +57,7 @@ public class MainActivityNew extends AppCompatActivity {
     private TabLayout tabLayout;
     private PagerAdapter adapter;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +70,12 @@ public class MainActivityNew extends AppCompatActivity {
         setPageViewer(tabLayout);
         isFirstTime();
     }
+
+//    @Override
+//    protected void onResume(){
+//        super.onResume();
+//        isFirstTime();
+//    }
 
     private void mainFlow() {
         datesToHours = SaveDataHelper.getDataFromFile(this.getApplicationContext());
@@ -108,6 +116,7 @@ public class MainActivityNew extends AppCompatActivity {
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapter adapter = new PagerAdapter
                 (getSupportFragmentManager(), tabLayout.getTabCount());
+        assert viewPager != null;
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -217,7 +226,7 @@ public class MainActivityNew extends AppCompatActivity {
         incPendingAnswers();
 //        System.out.println("getting data from server for " + date);
         RequestQueue queue = Volley.newRequestQueue(this);
-        final String dateToday = new SimpleDateFormat("yyyy-MM-dd").format(date);
+        final String dateToday = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date);
         String url = URL + dateToday;
         StringRequest postRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {

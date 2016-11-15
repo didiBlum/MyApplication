@@ -15,6 +15,7 @@ import com.adiBlum.adiblum.myapplication.helpers.SaveDataHelper;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 public class SummaryActivity extends Fragment {
@@ -72,7 +73,7 @@ public class SummaryActivity extends Fragment {
         if (missingData) {
             Date earliestDate = getEarliestDateMissingData(start, new Date());
             assert titleView != null;
-            titleView.setText(titleView.getText() + " (since " + new SimpleDateFormat(dateFormat).format(earliestDate) + ")");
+            titleView.setText(titleView.getText() + " (since " + new SimpleDateFormat(dateFormat, Locale.getDefault()).format(earliestDate) + ")");
         }
     }
 
