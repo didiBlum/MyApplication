@@ -191,15 +191,18 @@ public class SummaryActivity extends Fragment {
         }
     }
 
-
     private Date getEarliestDateMissingData(Date start, Date end) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(end);
         while (end.after(start) || SaveDataHelper.isSameDay(start, end)) {
             Double currentVal = datesToHours.get(SaveDataHelper.getStringDate(end));
             if (currentVal == null || currentVal.equals(-1.0)) {
-                cal.add(Calendar.DAY_OF_YEAR, 1);
-                return cal.getTime();
+                if (SaveDataHelper.isSameDay(end, new Date())) {
+                    return new Date();
+                } else {
+                    cal.add(Calendar.DAY_OF_YEAR, 1);
+                    return cal.getTime();
+                }
             }
             cal.add(Calendar.DAY_OF_YEAR, -1);
             end = cal.getTime();
