@@ -41,6 +41,7 @@ public class NeuraConnection {
         mNeuraApiClient.setAppUid(ctx.getResources().getString(R.string.app_uid_production)); //Mandatory
         mNeuraApiClient.setAppSecret(ctx.getResources().getString(R.string.app_secret_production)); //Mandatory
         mNeuraApiClient.enableLogFile(true); //Optional
+        mNeuraApiClient.enableNeuraHandingStateAlertMessages(false);
         mNeuraApiClient.connect(); //Mandatory
     }
 
