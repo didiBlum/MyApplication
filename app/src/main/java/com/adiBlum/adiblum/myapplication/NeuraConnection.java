@@ -77,7 +77,7 @@ public class NeuraConnection {
                                 mNeuraApiClient.registerFirebaseToken(
                                         mainActivity, FirebaseInstanceId.getInstance().getToken());
                                 System.out.println("token is: " + FirebaseInstanceId.getInstance().getToken());
-                                mainActivity.showData();
+                                mainActivity.askForData();
                             }
 
                             private void saveAccessToken(String userToken) {
