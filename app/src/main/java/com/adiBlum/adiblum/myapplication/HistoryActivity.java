@@ -46,25 +46,17 @@ public class HistoryActivity extends Fragment {
     }
 
     private void setList(ListView listview) {
-        Date current = DatesHelper.getFirstDateOfTheMonth();
+        Date current = DatesHelper.getOldestDay(data);
+        if (current == null) {
+            current = DatesHelper.getFirstDateOfTheMonth();
+        }
         Calendar cal = Calendar.getInstance();
         cal.setTime(current);
-        final ArrayList<String> list = new ArrayList<>();
+        final List<String> list = new ArrayList<>();
+        final List<String> monthsHeader = new ArrayList<>();
 
         while (current.before(new Date()) || SaveDataHelper.isSameDay(current, new Date())) {
-            String stringDate = SaveDataHelper.getStringDate(current);
-            Double timeAtWork = data.get(stringDate);
-            String prettyDate = new SimpleDateFormat(dateFormat, Locale.getDefault()).format(current);
-            if (prettyDate.equals(new SimpleDateFormat(dateFormat, Locale.getDefault()).format(new Date()))) {
-                prettyDate = "Today";
-            }
-            String prettyTimeString = SaveDataHelper.getPrettyTimeString(timeAtWork);
-            if (timeAtWork > 0) {
-                list.add("<b>" + prettyDate + ":</b> " + prettyTimeString);
-            }
-            if (timeAtWork <= 0) {
-                list.add("<font color=#9fa8b7><b>" + prettyDate + ":</b> " + prettyTimeString + "</font>");
-            }
+            addDateData(current, list, monthsHeader);
             cal.add(Calendar.DATE, 1);
             current = cal.getTime();
         }
@@ -72,7 +64,7 @@ public class HistoryActivity extends Fragment {
         Collections.reverse(list);
 
         final StableArrayAdapter adapter = new StableArrayAdapter(getActivity(),
-                android.R.layout.simple_list_item_1, list);
+                android.R.layout.simple_list_item_1, list, monthsHeader);
         listview.setAdapter(adapter);
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -86,16 +78,40 @@ public class HistoryActivity extends Fragment {
         });
     }
 
+    private void addDateData(Date current, List<String> list, List<String> monthsIndex) {
+        String stringDate = SaveDataHelper.getStringDate(current);
+        Double timeAtWork = data.get(stringDate);
+        String prettyDate = new SimpleDateFormat(dateFormat, Locale.getDefault()).format(current);
+        if (prettyDate.equals(new SimpleDateFormat(dateFormat, Locale.getDefault()).format(new Date()))) {
+            prettyDate = "Today";
+        }
+        String prettyTimeString = SaveDataHelper.getPrettyTimeString(timeAtWork);
+        if (timeAtWork > 0) {
+            list.add("<b>" + prettyDate + ":</b> " + prettyTimeString);
+        }
+        if (timeAtWork <= 0) {
+            list.add("<font color=#9fa8b7><b>" + prettyDate + ":</b> " + prettyTimeString + "</font>");
+        }
+
+        if (DatesHelper.getLastDayOfMonth(current).equals(current)) {
+            String monthName = DatesHelper.getMonthName(current);
+            list.add("<font color=#29ABE1><b>" + monthName  + "</b></font>");
+            monthsIndex.add(monthName);
+        }
+    }
+
     private class StableArrayAdapter extends ArrayAdapter<String> {
 
         HashMap<String, Integer> mIdMap = new HashMap<>();
+        List<String> headers;
 
         public StableArrayAdapter(Context context, int textViewResourceId,
-                                  List<String> objects) {
+                                  List<String> objects, List<String> headers) {
             super(context, textViewResourceId, objects);
             for (int i = 0; i < objects.size(); ++i) {
                 mIdMap.put(objects.get(i), i);
             }
+            this.headers = headers;
         }
 
         @Override
@@ -117,9 +133,9 @@ public class HistoryActivity extends Fragment {
             CharSequence text = textView.getText();
             textView.setText(Html.fromHtml(text.toString()));
             textView.setTextSize(16);
+
             return v;
         }
     }
-
 }
 
