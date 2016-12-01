@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.adiBlum.adiblum.myapplication.helpers.DataFetcherService;
+import com.adiBlum.adiblum.myapplication.helpers.PriodicDataFetchTask;
 import com.adiBlum.adiblum.myapplication.helpers.SaveDataHelper;
 import com.adiBlum.adiblum.myapplication.helpers.ShareHelper;
 import com.neura.standalonesdk.util.SDKUtils;
@@ -54,13 +55,9 @@ public class MainActivityNew extends AppCompatActivity {
                 showReadyData();
             }
         };
-    }
 
-//    @Override
-//    protected void onResume(){
-//        super.onResume();
-//        isFirstTime();
-//    }
+        PriodicDataFetchTask.scheduleRepeat(getApplicationContext());
+    }
 
     private void mainFlow() {
         datesToHours = SaveDataHelper.getDataFromFile(this.getApplicationContext());
@@ -77,7 +74,9 @@ public class MainActivityNew extends AppCompatActivity {
     }
 
     public synchronized void askForData() {
-        DataFetcherService.scheduleOneOff(getApplicationContext());
+        if (!isDestroyed()) {
+            DataFetcherService.getInstance().askForDataForDatesOfMonth(getApplicationContext());
+        }
     }
 
     public void showReadyData() {
@@ -176,8 +175,6 @@ public class MainActivityNew extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         mainFlow();
     }
-
-
 
     private void showSpinner(boolean showSpinner) {
         ProgressBar spinner = (ProgressBar) view.findViewById(R.id.progressBar1);
