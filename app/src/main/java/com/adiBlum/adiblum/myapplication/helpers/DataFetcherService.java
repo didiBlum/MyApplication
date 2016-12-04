@@ -52,8 +52,6 @@ public class DataFetcherService {
         pendingAnswers = 0;
     }
 
-
-
     public static DataFetcherService getInstance() {
         if (instance == null) {
             instance = new DataFetcherService();

@@ -50,7 +50,7 @@
             </intent-filter>
         </service>
 
-        <service android:name=".helpers.PriodicDataFetchTask"
+        <service android:name=".helpers.PeriodicDataFetchTask"
             android:exported="true"
             android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
             <intent-filter>

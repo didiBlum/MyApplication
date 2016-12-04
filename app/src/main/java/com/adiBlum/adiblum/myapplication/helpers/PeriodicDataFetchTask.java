@@ -11,7 +11,7 @@ import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.google.android.gms.gcm.TaskParams;
 
-public class PriodicDataFetchTask extends GcmTaskService {
+public class PeriodicDataFetchTask extends GcmTaskService {
 
     public static final String DATA_FETCHER_SERVICE_RESULT = "DataFetcherServiceResult";
 
@@ -33,7 +33,7 @@ public class PriodicDataFetchTask extends GcmTaskService {
         try {
             PeriodicTask periodic = new PeriodicTask.Builder()
                     //specify target service - must extend GcmTaskService
-                    .setService(PriodicDataFetchTask.class)
+                    .setService(PeriodicDataFetchTask.class)
                     //repeat every 60 * 60 seconds
                     .setPeriod(60 * 60)
                     //specify how much earlier the task can be executed (in seconds)
@@ -55,6 +55,6 @@ public class PriodicDataFetchTask extends GcmTaskService {
         }
     }
 
-    public PriodicDataFetchTask() {
+    public PeriodicDataFetchTask() {
     }
 }

@@ -19,7 +19,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.adiBlum.adiblum.myapplication.helpers.DataFetcherService;
-import com.adiBlum.adiblum.myapplication.helpers.PriodicDataFetchTask;
+import com.adiBlum.adiblum.myapplication.helpers.PeriodicDataFetchTask;
 import com.adiBlum.adiblum.myapplication.helpers.SaveDataHelper;
 import com.adiBlum.adiblum.myapplication.helpers.ShareHelper;
 import com.neura.standalonesdk.util.SDKUtils;
@@ -56,7 +56,7 @@ public class MainActivityNew extends AppCompatActivity {
             }
         };
 
-        PriodicDataFetchTask.scheduleRepeat(getApplicationContext());
+        PeriodicDataFetchTask.scheduleRepeat(getApplicationContext());
     }
 
     private void mainFlow() {

@@ -11,7 +11,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.widget.Toast;
 
-import com.neura.android.statealert.SensorsManager;
+import com.neura.resources.sensors.SensorType;
 import com.neura.standalonesdk.util.NeuraStateAlertReceiver;
 
 public class HandleNeuraStateAlertReceiver extends NeuraStateAlertReceiver {
@@ -27,8 +27,8 @@ public class HandleNeuraStateAlertReceiver extends NeuraStateAlertReceiver {
     }
 
     @Override
-    public void onSensorDisabled(Context context, SensorsManager.Type sensorType) {
-        if (sensorType.equals(SensorsManager.Type.location)) {
+    public void onSensorStateChanged(Context context, SensorType sensorType, boolean b) {
+        if (sensorType.equals(SensorType.location) && !b) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
             builder.setContentTitle("Location is disabled")
                     .setContentText("Enable it to help us track your working hours")
@@ -44,9 +44,6 @@ public class HandleNeuraStateAlertReceiver extends NeuraStateAlertReceiver {
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify((int) System.currentTimeMillis(), notification);
         }
-
-        //You may open the settings with an intent, in an activity's context :
-        //startActivityForResult(new Intent(SensorsManager.getInstance().getSensorAction(sensorType), REQUEST_CODE));
     }
 
     private PendingIntent getPendingIntent(Context context) {
