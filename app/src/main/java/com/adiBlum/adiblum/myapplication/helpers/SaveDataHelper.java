@@ -81,7 +81,10 @@ public class SaveDataHelper {
     }
 
     @NonNull
-    public static String getPrettyTimeString(double timeSpentAtWork) {
+    public static String getPrettyTimeString(Double timeSpentAtWork) {
+        if (timeSpentAtWork == null) {
+            return "No data";
+        }
         if (timeSpentAtWork > 0) {
             int hours = (int) (timeSpentAtWork / 60 / 60);
             int minutes = (int) ((timeSpentAtWork / 60) % 60);

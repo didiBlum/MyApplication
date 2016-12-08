@@ -40,7 +40,7 @@ public class DatesHelper {
     }
 
     public static Date getOldestDay(Map<String, Double> data) {
-        if (data.isEmpty()) {
+        if (data == null || data.isEmpty()) {
             return null;
         } else {
             return findOldestDateInList(data);
