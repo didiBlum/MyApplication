@@ -38,6 +38,9 @@ repositories {
     flatDir {
         dirs 'libs'
     }
+    maven {
+        url uri('mint-plugin-repo-5.2.0')
+    }
 }
 
 dependencies {
@@ -49,6 +52,7 @@ dependencies {
     compile 'com.jjoe64:graphview:4.2.1'
     compile 'com.android.support:appcompat-v7:23.2.1'
     compile 'com.google.firebase:firebase-messaging:9.4.0'
+    compile 'com.splunk:mint-android-sdk:5.2.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

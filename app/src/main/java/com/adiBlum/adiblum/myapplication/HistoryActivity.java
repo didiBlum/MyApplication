@@ -40,9 +40,11 @@ public class HistoryActivity extends Fragment {
     }
 
     public void start(Map<String, Double> data) {
-        final ListView listview = (ListView) view.findViewById(R.id.history_listView);
         this.data = data;
-        setList(listview);
+        if (isVisible()) {
+            final ListView listview = (ListView) view.findViewById(R.id.history_listView);
+            setList(listview);
+        }
     }
 
     private void setList(ListView listview) {

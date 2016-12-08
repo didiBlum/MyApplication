@@ -43,9 +43,11 @@ public class SummaryActivity extends Fragment {
     }
 
     private void updateTextViews() {
-        updateToday();
-        updateWeek();
-        updateMonth();
+        if (isVisible()) {
+            updateToday();
+            updateWeek();
+            updateMonth();
+        }
     }
 
     private void updateMonth() {

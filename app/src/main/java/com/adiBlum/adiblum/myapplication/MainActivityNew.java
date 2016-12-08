@@ -23,6 +23,7 @@ import com.adiBlum.adiblum.myapplication.helpers.PeriodicDataFetchTask;
 import com.adiBlum.adiblum.myapplication.helpers.SaveDataHelper;
 import com.adiBlum.adiblum.myapplication.helpers.ShareHelper;
 import com.neura.standalonesdk.util.SDKUtils;
+import com.splunk.mint.Mint;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,6 +58,7 @@ public class MainActivityNew extends AppCompatActivity {
         };
 
         PeriodicDataFetchTask.scheduleRepeat(getApplicationContext());
+        Mint.initAndStartSession(this.getApplication(), "3c9e4d9e");
     }
 
     private void mainFlow() {
