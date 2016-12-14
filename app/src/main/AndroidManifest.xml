@@ -25,14 +25,14 @@
         <activity android:name="com.adiBlum.adiblum.myapplication.StatisticsActivity" />
         <activity android:name="com.adiBlum.adiblum.myapplication.SaveSalaryDataActivity" />
 
-        <receiver
-            android:name="com.adiBlum.adiblum.myapplication.NeuraEventsBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="com.example.adiblum.myapplication" />
-            </intent-filter>
-        </receiver>
+        <!--<receiver-->
+            <!--android:name="com.adiBlum.adiblum.myapplication.NeuraEventsBroadcastReceiver"-->
+            <!--android:permission="com.google.android.c2dm.permission.SEND">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<category android:name="com.example.adiblum.myapplication" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
 
         <receiver
             android:name=".HandleNeuraStateAlertReceiver"

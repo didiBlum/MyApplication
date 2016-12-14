@@ -33,9 +33,9 @@ public class FirebaseMessagingServiceImpl extends FirebaseMessagingService {
             assert event != null;
             String format = getTime(event);
             if (event.getEventName().equals("userArrivedToWork")) {
-                generateNotification(getApplicationContext(), event, "Arrived to work at " + format, "");
+                generateNotification(getApplicationContext(), "Arrived to work at " + format, "");
             } else if (event.getEventName().equals("userLeftWork")) {
-                generateNotification(getApplicationContext(), event, "Left work at " + format, "See your daily working time");
+                generateNotification(getApplicationContext(), "Left work at " + format, "See your daily working time");
             }
         }
     }
@@ -46,15 +46,15 @@ public class FirebaseMessagingServiceImpl extends FirebaseMessagingService {
         return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(date);
     }
 
-    private void generateNotification(Context context, NeuraEvent event, String title, String text) {
+    private void generateNotification(Context context, String title, String message) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setContentTitle(title)
-                .setContentText(text)
+                .setContentText(message)
                 .setSmallIcon(R.drawable.ic_stat_icon)
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), context.getApplicationInfo().icon))
                 .setAutoCancel(true)
                 .setWhen(System.currentTimeMillis())
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(event.getEventName()));
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message));
 
         PendingIntent resultPendingIntent = getPendingIntent();
         builder.setContentIntent(resultPendingIntent);
