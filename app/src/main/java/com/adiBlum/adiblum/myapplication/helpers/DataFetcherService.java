@@ -2,6 +2,7 @@ package com.adiBlum.adiblum.myapplication.helpers;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.adiBlum.adiblum.myapplication.NeuraConnection;
@@ -12,8 +13,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.neura.resources.insights.DailySummaryCallbacks;
 import com.neura.resources.insights.DailySummaryData;
 import com.neura.resources.object.ActivityPlace;
+import com.neura.resources.situation.SituationCallbacks;
+import com.neura.resources.situation.SituationData;
+import com.neura.standalonesdk.service.NeuraApiClient;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,6 +29,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -31,6 +38,7 @@ import java.util.Map;
 public class DataFetcherService {
 
     public static final String DATA_FETCHER_SERVICE_RESULT = "DataFetcherServiceResult";
+    public static final String USER_SITUATION_RESULT = "UserSituation";
     private static DataFetcherService instance = null;
     int pendingAnswers = 0;
     private Map<String, Double> datesToHours = new HashMap<>();
@@ -48,10 +56,6 @@ public class DataFetcherService {
         return pendingAnswers;
     }
 
-    private synchronized void resetPendingAnswers() {
-        pendingAnswers = 0;
-    }
-
     public static DataFetcherService getInstance() {
         if (instance == null) {
             instance = new DataFetcherService();
@@ -59,48 +63,25 @@ public class DataFetcherService {
         return instance;
     }
 
-    public Map<String, Double> getDatesToHours() {
-        return datesToHours;
-    }
-
-    private void requestDailySummary(final Date date, final Context context) {
+    public void requestDailySummaryFromClient(final Date date, final Context context) {
         incPendingAnswers();
 //        System.out.println("getting data from server for " + date);
-        RequestQueue queue = Volley.newRequestQueue(context);
-        final String dateToday = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date);
-        String url = URL + dateToday;
-        StringRequest postRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-//                        System.out.println("Response" + response);
-                        try {
-                            double timeSpentAtWork = getTimeSpentAtWork(response);
-                            handleHttpResultForDay(timeSpentAtWork, dateToday, context);
-                        } catch (JSONException e) {
-                            handleHttpResultForDay(-1.0, dateToday, context);
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-//                        System.out.println("error => " + error.toString());
-                        decPendingAnswers();
-                    }
-                }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                String bearer = "Bearer " + NeuraConnection.getAccessToken(context);
-//                System.out.println("bearer: " + bearer);
+        final String dateToday = new SimpleDateFormat("yyyy-MM-dd").format(date);
 
-                params.put("Authorization", bearer);
-                return params;
+        NeuraApiClient client = NeuraConnection.getClient();
+        client.getDailySummary(date.getTime(), new DailySummaryCallbacks() {
+            @Override
+            public void onSuccess(DailySummaryData dailySummaryData) {
+                double timeSpentAtWork = getTimeSpentAtWork(dailySummaryData);
+                handleHttpResultForDay(timeSpentAtWork, dateToday, context);
             }
-        };
-        queue.add(postRequest);
+
+            @Override
+            public void onFailure(Bundle bundle, int i) {
+                decPendingAnswers();
+            }
+        });
+
     }
 
     private void handleHttpResultForDay(double timeSpentAtWork, String dateToday, Context context) {
@@ -111,42 +92,35 @@ public class DataFetcherService {
         decPendingAnswers();
 //        System.out.println("pendingAnswers-- now is: " + getPendingAnswers());
         if (getPendingAnswers() == 0) {
-            sendResults(context);
+            sendSummaryResults(context);
         }
     }
 
-    private void sendResults(Context context) {
+    private void sendSummaryResults(Context context) {
         LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(context);
         Intent intent = new Intent(DATA_FETCHER_SERVICE_RESULT);
         intent.putExtra(DATA_FETCHER_SERVICE_RESULT, (Serializable) datesToHours);
         broadcastManager.sendBroadcast(intent);
     }
 
-    private double getTimeSpentAtWork(String dailySummaryJson) throws JSONException {
-        JSONObject json = new JSONObject(dailySummaryJson);
-        JSONObject data = json.getJSONObject("data");
-        if (data != null) {
-            JSONArray jsonArray = data.getJSONArray("visitedPlaces");
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject visitedPlace = jsonArray.getJSONObject(i);
-                if ("work".equals(visitedPlace.getString("label"))) {
-                    return visitedPlace.getDouble("timeSpentAtPlace");
-                }
-            }
-            return 0;
+    private void sendSituationDataResults(Context context, SituationData situationData) {
+        if (situationData.getCurrentSituation() != null || situationData.getPreviousSituation() != null) {
+            LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(context);
+            Intent intent = new Intent(USER_SITUATION_RESULT);
+            intent.putExtra(USER_SITUATION_RESULT, (new Gson()).toJson(situationData));
+            broadcastManager.sendBroadcast(intent);
         }
-        return -1;
     }
 
     private boolean getDataForDay(Date date, Context context) {
 //        System.out.println("getting data for day: " + date);
         if (SaveDataHelper.isSameDay(date, new Date())) { // always ask for today
-            requestDailySummary(date, context);
+            requestDailySummaryFromClient(date, context);
             return false;
         }
         String stringDate = SaveDataHelper.getStringDate(date);
         if (!datesToHours.containsKey(stringDate)) {
-            requestDailySummary(date, context);
+            requestDailySummaryFromClient(date, context);
             return false;
         }
         return true;
@@ -175,12 +149,31 @@ public class DataFetcherService {
     }
 
     private double getTimeSpentAtWork(DailySummaryData dailySummaryData) {
-        ArrayList<ActivityPlace> activityPlaces = dailySummaryData.getActivityPlaces();
-        for (ActivityPlace activityPlace : activityPlaces) {
-            if (activityPlace.getLabel().equals("work")) {
-                return activityPlace.getTimeSpentAtPlace();
+        ArrayList<ActivityPlace> visitedPlaces = dailySummaryData.getVisitedPlaces();
+        if (visitedPlaces != null) {
+            for (ActivityPlace activityPlace : visitedPlaces) {
+                if (activityPlace.getLabel().equals("work")) {
+                    return activityPlace.getTimeSpentAtPlace();
+                }
             }
         }
         return 0;
+    }
+
+    public void getUserSituation(final Context context) {
+        NeuraApiClient neuraApiClient = NeuraConnection.getmNeuraApiClient();
+        long timestamp = System.currentTimeMillis();
+        System.out.println("siiit request: " + timestamp);
+        neuraApiClient.getUserSituation(new SituationCallbacks() {
+            @Override
+            public void onSuccess(SituationData situationData) {
+                sendSituationDataResults(context, situationData);
+            }
+
+            @Override
+            public void onFailure(Bundle bundle, int i) {
+
+            }
+        }, timestamp);
     }
 }

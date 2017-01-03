@@ -1,6 +1,8 @@
 package com.adiBlum.adiblum.myapplication.helpers;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.format.DateFormat;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,6 +11,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class DatesHelper {
 
@@ -78,5 +81,15 @@ public class DatesHelper {
         c.setTime(date);
         c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
         return c.getTime();
+    }
+
+
+    @NonNull
+    public static String getTimestampTime(long startTimestamp) {
+        Calendar cal = Calendar.getInstance();
+        TimeZone tz = cal.getTimeZone();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        sdf.setTimeZone(tz);
+        return sdf.format(new Date(startTimestamp * 1000));
     }
 }

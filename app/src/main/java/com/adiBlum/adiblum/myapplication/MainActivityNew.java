@@ -22,6 +22,9 @@ import com.adiBlum.adiblum.myapplication.helpers.DataFetcherService;
 import com.adiBlum.adiblum.myapplication.helpers.PeriodicDataFetchTask;
 import com.adiBlum.adiblum.myapplication.helpers.SaveDataHelper;
 import com.adiBlum.adiblum.myapplication.helpers.ShareHelper;
+import com.google.gson.Gson;
+import com.neura.resources.situation.SituationData;
+import com.neura.resources.situation.SubSituationData;
 import com.neura.standalonesdk.util.SDKUtils;
 import com.splunk.mint.Mint;
 
@@ -52,13 +55,26 @@ public class MainActivityNew extends AppCompatActivity {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                datesToHours = (Map<String, Double>) intent.getSerializableExtra(DataFetcherService.DATA_FETCHER_SERVICE_RESULT);
-                showReadyData();
+                if (intent.getAction().equals(DataFetcherService.DATA_FETCHER_SERVICE_RESULT)) {
+                    datesToHours = (Map<String, Double>) intent.getSerializableExtra(DataFetcherService.DATA_FETCHER_SERVICE_RESULT);
+                    showReadyData();
+                }
+                if (intent.getAction().equals(DataFetcherService.USER_SITUATION_RESULT)) {
+                    handleUserSituation(intent);
+                }
             }
         };
 
         PeriodicDataFetchTask.scheduleRepeat(getApplicationContext());
         Mint.initAndStartSession(this.getApplication(), "3c9e4d9e");
+    }
+
+    private void handleUserSituation(Intent intent) {
+        Gson gson = new Gson();
+        String strObj = intent.getStringExtra(DataFetcherService.USER_SITUATION_RESULT);
+        SituationData situationData = gson.fromJson(strObj, SituationData.class);
+        SummaryActivity summaryActivity = (SummaryActivity) this.adapter.getItem(0);
+        summaryActivity.updateSituation(situationData);
     }
 
     private void mainFlow() {
@@ -77,7 +93,9 @@ public class MainActivityNew extends AppCompatActivity {
 
     public synchronized void askForData() {
         if (!isDestroyed()) {
-            DataFetcherService.getInstance().askForDataForDatesOfMonth(getApplicationContext());
+            DataFetcherService instance = DataFetcherService.getInstance();
+            instance.askForDataForDatesOfMonth(getApplicationContext());
+            instance.getUserSituation(getApplicationContext());
         }
     }
 
@@ -194,6 +212,9 @@ public class MainActivityNew extends AppCompatActivity {
         super.onStart();
         LocalBroadcastManager.getInstance(this).registerReceiver((broadcastReceiver),
                 new IntentFilter(DataFetcherService.DATA_FETCHER_SERVICE_RESULT)
+        );
+        LocalBroadcastManager.getInstance(this).registerReceiver((broadcastReceiver),
+                new IntentFilter(DataFetcherService.USER_SITUATION_RESULT)
         );
     }
 

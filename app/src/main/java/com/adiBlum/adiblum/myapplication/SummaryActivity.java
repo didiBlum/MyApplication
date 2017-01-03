@@ -1,7 +1,9 @@
 package com.adiBlum.adiblum.myapplication;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -9,8 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.adiBlum.adiblum.myapplication.helpers.DatesHelper;
 import com.adiBlum.adiblum.myapplication.helpers.SalaryCalculator;
 import com.adiBlum.adiblum.myapplication.helpers.SaveDataHelper;
+import com.neura.resources.situation.SituationData;
+import com.neura.resources.situation.SubSituationData;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,13 +29,20 @@ public class SummaryActivity extends Fragment {
     private SalaryCalculator salaryCalculator = new SalaryCalculator();
     private Map<String, Double> datesToHours;
     private static final String dateFormat = "MMM d";
+    SituationData situationData;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_with_cells, container, false);
         summaryActivity = view;
-//        updateTextViews();
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateTextViews();
+        updateCurrent();
     }
 
     public void start(Map<String, Double> datesToHours) {
@@ -38,12 +50,44 @@ public class SummaryActivity extends Fragment {
         updateTextViews();
     }
 
+    public void updateSituation(SituationData situationData) {
+        this.situationData = situationData;
+        updateCurrent();
+    }
+
+    private void updateCurrent() {
+        if (isVisible() && situationData != null) {
+            System.out.println("situation is: " + situationData);
+            TextView textView = (TextView) summaryActivity.findViewById(R.id.currentlyAtWork);
+            SubSituationData currentSituation = situationData.getCurrentSituation();
+            if (isSituationInWork(currentSituation)) {
+                long startTimestamp = currentSituation.getStartTimestamp();
+                System.out.println("since: " + startTimestamp);
+                String date = DatesHelper.getTimestampTime(startTimestamp);
+                System.out.println("since date: " + startTimestamp);
+                textView.setText("At work since: " + date);
+            } else {
+                SubSituationData previousSituation = situationData.getPreviousSituation();
+                if (isSituationInWork(previousSituation)) {
+                    long startTimestamp = currentSituation.getStartTimestamp();
+                    textView.setText("Out of work (left at " + startTimestamp + ")");
+                } else {
+                    textView.setText("Out of work");
+                }
+            }
+        }
+    }
+
+    private boolean isSituationInWork(SubSituationData situationData) {
+        return situationData.getPlace().getSemanticType().equals("work");
+    }
+
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void updateTextViews() {
-        if (isVisible()) {
+        if (isVisible() && datesToHours != null) {
             updateToday();
             updateWeek();
             updateMonth();
