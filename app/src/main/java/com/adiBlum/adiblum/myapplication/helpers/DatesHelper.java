@@ -83,6 +83,12 @@ public class DatesHelper {
         return c.getTime();
     }
 
+    public static Date getYesterday() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        return cal.getTime();
+    }
+
 
     @NonNull
     public static String getTimestampTime(long startTimestamp) {

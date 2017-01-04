@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:background="?attr/colorPrimary"
-        android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:title="@string/app_name" />
@@ -38,9 +37,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:id="@+id/shitstuff"
-
             app:menu="@menu/drawermenu"
-            android:layout_marginTop="-24dp"
             />
 
     </android.support.v4.widget.DrawerLayout>

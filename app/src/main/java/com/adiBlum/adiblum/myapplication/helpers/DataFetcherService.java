@@ -114,7 +114,9 @@ public class DataFetcherService {
 
     private boolean getDataForDay(Date date, Context context) {
 //        System.out.println("getting data for day: " + date);
-        if (SaveDataHelper.isSameDay(date, new Date())) { // always ask for today
+
+        if (SaveDataHelper.isSameDay(date, new Date()) ||
+                SaveDataHelper.isSameDay(date, DatesHelper.getYesterday())) { // always ask for today
             requestDailySummaryFromClient(date, context);
             return false;
         }

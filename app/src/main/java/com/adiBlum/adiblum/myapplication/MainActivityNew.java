@@ -122,23 +122,9 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
         tabsFragment.updateViews(datesToHours);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                startActivityForResult(new Intent(this, SaveSalaryDataActivity.class), 1);
-                return true;
-//            case R.id.action_share:
-//                showShare();
-//                return true;
-        }
         return true;
     }
 
@@ -191,16 +177,12 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        System.out.println("choose - " + item.getItemId());
         mDrawerLayout.closeDrawers();
-        System.out.println("choose - " + item.getItemId());
         switch (item.getItemId()) {
             case R.id.action_settings:
-                System.out.println("choose - startActivityForResult ");
                 startActivityForResult(new Intent(getApplicationContext(), SaveSalaryDataActivity.class), 1);
                 return true;
             case R.id.action_share:
-                System.out.println("choose - action_share ");
                 showShare();
                 return true;
         }
