@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/relativeLayout"
+    android:layout_alignParentStart="true"
+    android:id="@+id/relativeLayout3"
+    tools:showIn="@layout/activity_with_cells"
+    android:layout_marginBottom="40dp">
+
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:id="@+id/imageView2"
+        android:src="@drawable/week_calendar_icon"
+        android:paddingRight="0dp"
+        android:layout_marginRight="10dp" />
+
+    <TextView
+        android:id="@+id/weekly_title_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawablePadding="10dp"
+        android:text="@string/this_week"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/imageView2"
+        android:textSize="16sp"
+        />
+
+    <TextView
+        android:id="@+id/weeklyTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_below="@+id/weekly_title_textview"
+        android:layout_toEndOf="@+id/imageView2"
+        android:textStyle="bold"
+        android:textSize="30sp"/>
+</RelativeLayout>
