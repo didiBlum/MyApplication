@@ -7,10 +7,12 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TabLayout;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -20,38 +22,42 @@ import android.widget.ProgressBar;
 
 import com.adiBlum.adiblum.myapplication.helpers.DataFetcherService;
 import com.adiBlum.adiblum.myapplication.helpers.PeriodicDataFetchTask;
-import com.adiBlum.adiblum.myapplication.helpers.SaveDataHelper;
 import com.adiBlum.adiblum.myapplication.helpers.ShareHelper;
-import com.google.gson.Gson;
-import com.neura.resources.situation.SituationData;
-import com.neura.resources.situation.SubSituationData;
 import com.neura.standalonesdk.util.SDKUtils;
 import com.splunk.mint.Mint;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivityNew extends AppCompatActivity {
+public class MainActivityNew extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String IS_FIRST_RUN = "isFirstRun";
     private Map<String, Double> datesToHours = new HashMap<>();
 
     private MainActivityNew view;
-    private PagerAdapter adapter;
     private BroadcastReceiver broadcastReceiver;
+
+    DrawerLayout mDrawerLayout;
+    NavigationView mNavigationView;
+    FragmentManager mFragmentManager;
+    FragmentTransaction mFragmentTransaction;
+    TabFragment tabsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tab_viewer);
+        setContentView(R.layout.activity_main);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        mNavigationView = (NavigationView) findViewById(R.id.shitstuff);
+        setDrawer();
         view = this;
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        TabLayout tabLayout = setTabs();
-        setPageViewer(tabLayout);
         isFirstTime();
+        setBroadcast();
+        PeriodicDataFetchTask.scheduleRepeat(getApplicationContext());
+        Mint.initAndStartSession(this.getApplication(), "3c9e4d9e");
+    }
 
+    private void setBroadcast() {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -60,25 +66,38 @@ public class MainActivityNew extends AppCompatActivity {
                     showReadyData();
                 }
                 if (intent.getAction().equals(DataFetcherService.USER_SITUATION_RESULT)) {
-                    handleUserSituation(intent);
+                    tabsFragment.handleUserSituation(intent);
                 }
             }
         };
-
-        PeriodicDataFetchTask.scheduleRepeat(getApplicationContext());
-        Mint.initAndStartSession(this.getApplication(), "3c9e4d9e");
     }
 
-    private void handleUserSituation(Intent intent) {
-        Gson gson = new Gson();
-        String strObj = intent.getStringExtra(DataFetcherService.USER_SITUATION_RESULT);
-        SituationData situationData = gson.fromJson(strObj, SituationData.class);
-        SummaryActivity summaryActivity = (SummaryActivity) this.adapter.getItem(0);
-        summaryActivity.updateSituation(situationData);
+    private void setDrawer() {
+        /**
+         * Lets inflate the very first fragment
+         * Here , we are inflating the TabFragment as the first Fragment
+         */
+        mFragmentManager = getSupportFragmentManager();
+        mFragmentTransaction = mFragmentManager.beginTransaction();
+        tabsFragment = new TabFragment();
+        mFragmentTransaction.replace(R.id.containerView, tabsFragment).commit();
+
+        mNavigationView.setNavigationItemSelectedListener(this);
+
+        /**
+         * Setup Drawer Toggle of the Toolbar
+         */
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name,
+                R.string.app_name);
+
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
+
+        mDrawerToggle.syncState();
     }
 
     private void mainFlow() {
-        datesToHours = SaveDataHelper.getDataFromFile(this.getApplicationContext());
         connectToNeura();
     }
 
@@ -100,53 +119,9 @@ public class MainActivityNew extends AppCompatActivity {
     }
 
     public void showReadyData() {
-        showSpinner(false);
-        updateViews();
+        tabsFragment.updateViews(datesToHours);
     }
 
-    private void updateViews() {
-        SummaryActivity summaryActivity = (SummaryActivity) this.adapter.getItem(0);
-        summaryActivity.start(datesToHours);
-
-        HistoryActivity historyActivity = (HistoryActivity) this.adapter.getItem(1);
-        historyActivity.start(datesToHours);
-    }
-
-    private void setPageViewer(TabLayout tabLayout) {
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        final PagerAdapter adapter = new PagerAdapter
-                (getSupportFragmentManager(), tabLayout.getTabCount());
-        assert viewPager != null;
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-        this.adapter = adapter;
-    }
-
-    @NonNull
-    private TabLayout setTabs() {
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        assert tabLayout != null;
-        tabLayout.addTab(tabLayout.newTab().setText("Summary"));
-        tabLayout.addTab(tabLayout.newTab().setText("History"));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        return tabLayout;
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -160,9 +135,9 @@ public class MainActivityNew extends AppCompatActivity {
             case R.id.action_settings:
                 startActivityForResult(new Intent(this, SaveSalaryDataActivity.class), 1);
                 return true;
-            case R.id.action_share:
-                showShare();
-                return true;
+//            case R.id.action_share:
+//                showShare();
+//                return true;
         }
         return true;
     }
@@ -196,16 +171,6 @@ public class MainActivityNew extends AppCompatActivity {
         mainFlow();
     }
 
-    private void showSpinner(boolean showSpinner) {
-        ProgressBar spinner = (ProgressBar) view.findViewById(R.id.progressBar1);
-        assert spinner != null;
-        if (showSpinner) {
-            spinner.setVisibility(View.VISIBLE);
-        } else {
-            spinner.setVisibility(View.GONE);
-        }
-    }
-
 
     @Override
     protected void onStart() {
@@ -224,4 +189,21 @@ public class MainActivityNew extends AppCompatActivity {
         super.onStop();
     }
 
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        System.out.println("choose - " + item.getItemId());
+        mDrawerLayout.closeDrawers();
+        System.out.println("choose - " + item.getItemId());
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                System.out.println("choose - startActivityForResult ");
+                startActivityForResult(new Intent(getApplicationContext(), SaveSalaryDataActivity.class), 1);
+                return true;
+            case R.id.action_share:
+                System.out.println("choose - action_share ");
+                showShare();
+                return true;
+        }
+        return false;
+    }
 }

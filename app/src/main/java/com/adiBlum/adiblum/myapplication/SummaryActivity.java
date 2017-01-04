@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.adiBlum.adiblum.myapplication.helpers.DatesHelper;
@@ -49,6 +50,7 @@ public class SummaryActivity extends Fragment {
     public void start(Map<String, Double> datesToHours) {
         this.datesToHours = datesToHours;
         updateTextViews();
+        showSpinner(false);
     }
 
     public void updateSituation(SituationData situationData) {
@@ -83,7 +85,9 @@ public class SummaryActivity extends Fragment {
     }
 
     private boolean isSituationInWork(SubSituationData situationData) {
-        return situationData.getPlace().getSemanticType().equals("work");
+        return situationData != null &&
+                situationData.getPlace() != null &&
+                "work".equals(situationData.getPlace().getSemanticType());
     }
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -95,6 +99,17 @@ public class SummaryActivity extends Fragment {
             updateToday();
             updateWeek();
             updateMonth();
+        }
+    }
+
+    private void showSpinner(boolean showSpinner) {
+        if (summaryActivity == null) return;
+        ProgressBar spinner = (ProgressBar) summaryActivity.findViewById(R.id.progressBar);
+        assert spinner != null;
+        if (showSpinner) {
+            spinner.setVisibility(View.VISIBLE);
+        } else {
+            spinner.setVisibility(View.GONE);
         }
     }
 

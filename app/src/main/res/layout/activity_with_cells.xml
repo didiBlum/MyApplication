@@ -27,7 +27,8 @@
                 <!--android:text="My Working Hours"-->
                 <!--android:textAppearance="?android:attr/textAppearanceLarge"-->
                 <!--android:textSize="30dp"-->
-                <!--android:textStyle="bold" />--><include layout="@layout/currently_layout" />
+                <!--android:textStyle="bold" />-->
+            <include layout="@layout/currently_layout" />
 
             <include layout="@layout/daily_layout" />
 
@@ -39,6 +40,12 @@
                 android:id="@+id/include2"
                 layout="@layout/monthly_layout" />
 
+            <ProgressBar
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/progressBar"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true" />
         </RelativeLayout>
     </LinearLayout>
 </LinearLayout>

@@ -127,6 +127,7 @@ public class DataFetcherService {
     }
 
     public boolean askForDataForDatesOfMonth(Context context) {
+        datesToHours = SaveDataHelper.getDataFromFile(context);
         Date current = DatesHelper.getFirstDateOfTheMonth();
         Calendar cal = Calendar.getInstance();
         cal.setTime(current);
