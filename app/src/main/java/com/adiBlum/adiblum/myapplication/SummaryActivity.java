@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.adiBlum.adiblum.myapplication.helpers.DatesHelper;
@@ -59,21 +60,24 @@ public class SummaryActivity extends Fragment {
         if (isVisible() && situationData != null) {
             System.out.println("situation is: " + situationData);
             TextView textView = (TextView) summaryActivity.findViewById(R.id.currentlyAtWork);
+            ImageView imageView = (ImageView) summaryActivity.findViewById(R.id.currentlyImageView);
             SubSituationData currentSituation = situationData.getCurrentSituation();
             if (isSituationInWork(currentSituation)) {
                 long startTimestamp = currentSituation.getStartTimestamp();
                 System.out.println("since: " + startTimestamp);
                 String date = DatesHelper.getTimestampTime(startTimestamp);
                 System.out.println("since date: " + startTimestamp);
-                textView.setText("At work since: " + date);
+                textView.setText("Currently: At Work (since: " + date + ")");
+                imageView.setImageResource(R.drawable.inside);
             } else {
                 SubSituationData previousSituation = situationData.getPreviousSituation();
                 if (isSituationInWork(previousSituation)) {
                     long startTimestamp = currentSituation.getStartTimestamp();
-                    textView.setText("Out of work (left at " + startTimestamp + ")");
+                    textView.setText("Currently: Out of work (left at " + startTimestamp + ")");
                 } else {
-                    textView.setText("Out of work");
+                    textView.setText("Currently: Out of work");
                 }
+                imageView.setImageResource(R.drawable.outside);
             }
         }
     }
