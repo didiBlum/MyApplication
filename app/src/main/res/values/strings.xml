@@ -22,4 +22,5 @@
     <string name="logo">logo</string>
     <string name="history_action_name">History</string>
     <string name="currently">Currently:</string>
+    <string name="send_us_feedback">Send us feedback</string>
 </resources>

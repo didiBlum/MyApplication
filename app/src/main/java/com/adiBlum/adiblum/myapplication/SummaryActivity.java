@@ -75,7 +75,8 @@ public class SummaryActivity extends Fragment {
                 SubSituationData previousSituation = situationData.getPreviousSituation();
                 if (isSituationInWork(previousSituation)) {
                     long startTimestamp = currentSituation.getStartTimestamp();
-                    textView.setText("Currently: Out of work (left at " + startTimestamp + ")");
+                    String date = DatesHelper.getTimestampTime(startTimestamp);
+                    textView.setText("Currently: Out of work (left at " + date + ")");
                 } else {
                     textView.setText("Currently: Out of work");
                 }

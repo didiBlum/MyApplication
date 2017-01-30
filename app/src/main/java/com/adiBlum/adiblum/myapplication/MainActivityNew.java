@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -53,8 +54,8 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
         view = this;
         isFirstTime();
         setBroadcast();
-        PeriodicDataFetchTask.scheduleRepeat(getApplicationContext());
         Mint.initAndStartSession(this.getApplication(), "3c9e4d9e");
+//        PeriodicDataFetchTask.scheduleRepeat(getApplicationContext());
     }
 
     private void setBroadcast() {
@@ -133,6 +134,11 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
         startActivity(Intent.createChooser(i, "Share via"));
     }
 
+    private void showFeedback() throws PackageManager.NameNotFoundException {
+        Intent i = ShareHelper.getIntentForFeedback(getApplicationContext());
+        startActivity(Intent.createChooser(i, "Send Feedback"));
+    }
+
     private void isFirstTime() {
         Boolean isFirstRun = getSharedPreferences(this.getApplicationContext())
                 .getBoolean(IS_FIRST_RUN, true);
@@ -184,6 +190,13 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
                 return true;
             case R.id.action_share:
                 showShare();
+                return true;
+            case R.id.feedback:
+                try {
+                    showFeedback();
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
                 return true;
         }
         return false;

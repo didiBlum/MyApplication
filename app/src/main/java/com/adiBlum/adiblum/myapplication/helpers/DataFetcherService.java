@@ -165,17 +165,18 @@ public class DataFetcherService {
 
     public void getUserSituation(final Context context) {
         NeuraApiClient neuraApiClient = NeuraConnection.getmNeuraApiClient();
-        long timestamp = System.currentTimeMillis();
+        final long timestamp = System.currentTimeMillis();
         System.out.println("siiit request: " + timestamp);
         neuraApiClient.getUserSituation(new SituationCallbacks() {
             @Override
             public void onSuccess(SituationData situationData) {
+                System.out.println("received response for situation: " + situationData);
                 sendSituationDataResults(context, situationData);
             }
 
             @Override
             public void onFailure(Bundle bundle, int i) {
-
+                System.out.println("failed to get response of timestamp: " + timestamp) ;
             }
         }, timestamp);
     }

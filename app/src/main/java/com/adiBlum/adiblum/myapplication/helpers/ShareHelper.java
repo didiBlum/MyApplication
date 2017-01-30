@@ -1,6 +1,9 @@
 package com.adiBlum.adiblum.myapplication.helpers;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 
 import java.util.Calendar;
@@ -62,4 +65,15 @@ public class ShareHelper {
         return i;
     }
 
+    @NonNull
+    public static Intent getIntentForFeedback(Context context) throws PackageManager.NameNotFoundException {
+        Intent email = new Intent(Intent.ACTION_SEND);
+        email.setType("text/email");
+        email.putExtra(Intent.EXTRA_EMAIL, new String[] { "autoworklog.feedback@gmail.com" });
+        PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+        String version = pInfo.versionName;
+        int verCode = pInfo.versionCode;
+        email.putExtra(Intent.EXTRA_SUBJECT, "Feedback (version: " + version + ", code version " + verCode + ")");
+        return email;
+    }
 }
