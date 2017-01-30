@@ -1,4 +1,4 @@
-package com.adiBlum.adiblum.myapplication;
+package com.adiBlum.adiblum.myapplication.activities;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -18,12 +18,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
 
+import com.adiBlum.adiblum.myapplication.NeuraConnection;
+import com.adiBlum.adiblum.myapplication.R;
+import com.adiBlum.adiblum.myapplication.TabFragment;
 import com.adiBlum.adiblum.myapplication.helpers.DataFetcherService;
-import com.adiBlum.adiblum.myapplication.helpers.PeriodicDataFetchTask;
 import com.adiBlum.adiblum.myapplication.helpers.ShareHelper;
+import com.adiBlum.adiblum.myapplication.model.AllLoginData;
 import com.neura.standalonesdk.util.SDKUtils;
 import com.splunk.mint.Mint;
 
@@ -33,9 +34,8 @@ import java.util.Map;
 public class MainActivityNew extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String IS_FIRST_RUN = "isFirstRun";
-    private Map<String, Double> datesToHours = new HashMap<>();
+    private AllLoginData allLoginData;
 
-    private MainActivityNew view;
     private BroadcastReceiver broadcastReceiver;
 
     DrawerLayout mDrawerLayout;
@@ -51,7 +51,6 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         mNavigationView = (NavigationView) findViewById(R.id.shitstuff);
         setDrawer();
-        view = this;
         isFirstTime();
         setBroadcast();
         Mint.initAndStartSession(this.getApplication(), "3c9e4d9e");
@@ -63,7 +62,7 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals(DataFetcherService.DATA_FETCHER_SERVICE_RESULT)) {
-                    datesToHours = (Map<String, Double>) intent.getSerializableExtra(DataFetcherService.DATA_FETCHER_SERVICE_RESULT);
+                    allLoginData = (AllLoginData) intent.getSerializableExtra(DataFetcherService.DATA_FETCHER_SERVICE_RESULT);
                     showReadyData();
                 }
                 if (intent.getAction().equals(DataFetcherService.USER_SITUATION_RESULT)) {
@@ -120,7 +119,7 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
     }
 
     public void showReadyData() {
-        tabsFragment.updateViews(datesToHours);
+        tabsFragment.updateViews(allLoginData);
     }
 
     @Override
@@ -130,7 +129,7 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
     }
 
     private void showShare() {
-        Intent i = ShareHelper.getIntentForShare(datesToHours);
+        Intent i = ShareHelper.getIntentForShare(allLoginData);
         startActivity(Intent.createChooser(i, "Share via"));
     }
 

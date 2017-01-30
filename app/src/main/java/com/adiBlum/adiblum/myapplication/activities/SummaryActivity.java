@@ -1,4 +1,4 @@
-package com.adiBlum.adiblum.myapplication;
+package com.adiBlum.adiblum.myapplication.activities;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,9 +13,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.adiBlum.adiblum.myapplication.R;
 import com.adiBlum.adiblum.myapplication.helpers.DatesHelper;
 import com.adiBlum.adiblum.myapplication.helpers.SalaryCalculator;
 import com.adiBlum.adiblum.myapplication.helpers.SaveDataHelper;
+import com.adiBlum.adiblum.myapplication.model.AllLoginData;
 import com.neura.resources.situation.SituationData;
 import com.neura.resources.situation.SubSituationData;
 
@@ -29,7 +31,7 @@ public class SummaryActivity extends Fragment {
 
     private View summaryActivity;
     private SalaryCalculator salaryCalculator = new SalaryCalculator();
-    private Map<String, Double> datesToHours;
+    private AllLoginData allLoginData;
     private static final String dateFormat = "MMM d";
     SituationData situationData;
 
@@ -40,15 +42,15 @@ public class SummaryActivity extends Fragment {
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateTextViews();
-        updateCurrent();
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        updateTextViews();
+//        updateCurrent();
+//    }
 
-    public void start(Map<String, Double> datesToHours) {
-        this.datesToHours = datesToHours;
+    public void start(AllLoginData allLoginData) {
+        this.allLoginData = allLoginData;
         updateTextViews();
         showSpinner(false);
     }
@@ -96,7 +98,7 @@ public class SummaryActivity extends Fragment {
     }
 
     private void updateTextViews() {
-        if (isVisible() && datesToHours != null) {
+        if (isVisible() && allLoginData != null) {
             updateToday();
             updateWeek();
             updateMonth();
@@ -153,8 +155,10 @@ public class SummaryActivity extends Fragment {
     }
 
     private void updateToday() {
+        System.out.println("update today with - " + allLoginData.getDateToLoginData().size());
+        System.out.println("update today with - " + allLoginData);
         TextView textView = (TextView) summaryActivity.findViewById(R.id.dailyTextView);
-        Double timeSpentAtWork = datesToHours.get(SaveDataHelper.getStringDate(new Date()));
+        Double timeSpentAtWork = allLoginData.getDataForDate(new Date()).getTotalTime();
         int workingDays = 0;
         if (timeSpentAtWork > 0) {
             workingDays++;
@@ -165,86 +169,6 @@ public class SummaryActivity extends Fragment {
         }
     }
 
-
-//    public void setDatePicker(View view) {
-//        SmoothDateRangePickerFragment smoothDateRangePickerFragment = SmoothDateRangePickerFragment.newInstance(
-//                new SmoothDateRangePickerFragment.OnDateRangeSetListener() {
-//                    @Override
-//                    public void onDateRangeSet(SmoothDateRangePickerFragment view,
-//                                               int yearStart, int monthStart,
-//                                               int dayStart, int yearEnd,
-//                                               int monthEnd, int dayEnd) {
-//                        setCustomDates(yearStart, monthStart, dayStart, yearEnd, monthEnd, dayEnd);
-//                    }
-//                });
-//
-//        smoothDateRangePickerFragment.show(getActivity().getFragmentManager(), "smoothDateRangePicker");
-//    }
-//
-//    private void setCustomDates(int yearStart, int monthStart, int dayStart, int yearEnd, int monthEnd, int dayEnd) {
-//        Date startDate = new Date(yearStart - 1900, monthStart, dayStart);
-//        Date endDate = new Date(yearEnd - 1900, monthEnd, dayEnd);
-//        try {
-//            isCustom = true;
-//            customStart = startDate;
-//            customEnd = endDate;
-//            if (askForDataForDates(startDate, endDate)) {
-//                getCustomDataForDates(startDate, endDate);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    private void getCustomDataForDates(Date startDate, Date endDate) {
-//        final int[] workingDays = {0};
-//        final Double[] timeSpentAtWork = {0.0};
-//        TextView customDataTextView = (TextView) summaryActivity.findViewById(R.id.customTextView);
-//        TextView customTitleTextview = (TextView) summaryActivity.findViewById(R.id.custom_title_textview);
-//        assert customDataTextView != null;
-//        customDataTextView.setVisibility(View.VISIBLE);
-//        String startString = new SimpleDateFormat(dateFormat).format(startDate);
-//        String endString = new SimpleDateFormat(dateFormat).format(endDate);
-//
-//        collectDataBetweenDates(workingDays, timeSpentAtWork, startDate, endDate);
-//        assert customDataTextView != null;
-//        assert customTitleTextview != null;
-//        customTitleTextview.setText(startString + " - " + endString);
-//        if (timeSpentAtWork[0].equals(-1.0)) {
-//            customDataTextView.setText("No data was found for all the days");
-//        } else {
-//            String time = getTextForData(timeSpentAtWork[0], workingDays[0]);
-//            customDataTextView.setText(time);
-//        }
-//        resetCustom();
-//    }
-//
-//    private void resetCustom() {
-//        isCustom = false;
-//        customStart = null;
-//        customEnd = null;
-//    }
-
-//    public void requestDailySummaryFromClient(final Date date) {
-//        incPendingAnswers();
-////        System.out.println("getting data from server for " + date);
-//        final String dateToday = new SimpleDateFormat("yyyy-MM-dd").format(date);
-//
-//        NeuraApiClient client = NeuraConnection.getClient();
-//        client.getDailySummary(date.getTime(), new DailySummaryCallbacks() {
-//            @Override
-//            public void onSuccess(DailySummaryData dailySummaryData) {
-//                double timeSpentAtWork = getTimeSpentAtWork(dailySummaryData);
-//                handleResultForDay(timeSpentAtWork, dateToday);
-//            }
-//
-//            @Override
-//            public void onFailure(Bundle bundle, int i) {
-//                decPendingAnswers();
-//            }
-//        });
-//
-//    }
 
 
     private String getTextForData(double timeSpentAtWork, int workingDays) {
@@ -261,8 +185,8 @@ public class SummaryActivity extends Fragment {
         Calendar cal = Calendar.getInstance();
         cal.setTime(end);
         while (end.after(start) || SaveDataHelper.isSameDay(start, end)) {
-            Double currentVal = datesToHours.get(SaveDataHelper.getStringDate(end));
-            if (currentVal == null || currentVal.equals(-1.0)) {
+            double currentVal = allLoginData.getDataForDate(end).getTotalTime();
+            if (currentVal == -1.0) {
                 if (SaveDataHelper.isSameDay(end, new Date())) {
                     return new Date();
                 } else {
@@ -286,8 +210,8 @@ public class SummaryActivity extends Fragment {
         Calendar cal = Calendar.getInstance();
         cal.setTime(end);
         while (end.after(start) || SaveDataHelper.isSameDay(start, end)) {
-            Double currentVal = datesToHours.get(SaveDataHelper.getStringDate(end));
-            if (currentVal == null || currentVal.equals(-1.0)) {
+            double currentVal = allLoginData.getDataForDate(end).getTotalTime();
+            if (currentVal ==-1.0) {
                 return true;
             }
             timeSpentAtWork[0] += currentVal;

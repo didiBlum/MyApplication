@@ -15,15 +15,15 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.adiBlum.adiblum.myapplication.MainActivityNew">
+        <activity android:name=".activities.MainActivityNew">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.adiBlum.adiblum.myapplication.WelcomeActivity" />
+        <activity android:name=".activities.WelcomeActivity" />
         <activity android:name="com.adiBlum.adiblum.myapplication.StatisticsActivity" />
-        <activity android:name="com.adiBlum.adiblum.myapplication.SaveSalaryDataActivity" />
+        <activity android:name=".activities.SaveSalaryDataActivity" />
 
         <!--<receiver-->
             <!--android:name="com.adiBlum.adiblum.myapplication.NeuraEventsBroadcastReceiver"-->

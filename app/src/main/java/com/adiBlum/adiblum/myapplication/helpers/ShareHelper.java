@@ -6,6 +6,8 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 
+import com.adiBlum.adiblum.myapplication.model.AllLoginData;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -15,7 +17,7 @@ public class ShareHelper {
     private static final String COMMA_DELIMITER = ": ";
     private static final String NEW_LINE_SEPARATOR = "\n";
 
-    public static String createMonthly(Map<String, Double> datesToHours, Date startDate, Date endDate) {
+    public static String createMonthly(AllLoginData allLoginData, Date startDate, Date endDate) {
         String result = "";
         Calendar cal = Calendar.getInstance();
         cal.setTime(startDate);
@@ -23,8 +25,8 @@ public class ShareHelper {
         int workingDays = 0;
         while (startDate.before(endDate) || SaveDataHelper.isSameDay(startDate, endDate)) {
             String stringDate = SaveDataHelper.getStringDate(startDate);
-            if (datesToHours.containsKey(stringDate)) {
-                Double timeAtWork = datesToHours.get(stringDate);
+            if (allLoginData.getDateToLoginData().containsKey(startDate)) {
+                Double timeAtWork = allLoginData.getDataForDate(startDate).getTotalTime();
                 String formattedTimeAtWork = SaveDataHelper.getPrettyTimeString(timeAtWork);
                 if (timeAtWork == -1) {
                     formattedTimeAtWork = "No data";
@@ -56,10 +58,10 @@ public class ShareHelper {
     }
 
     @NonNull
-    public static Intent getIntentForShare(Map<String, Double> datesToHours) {
+    public static Intent getIntentForShare(AllLoginData allLoginData) {
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("text/plain");
-        String monthly = ShareHelper.createMonthly(datesToHours, DatesHelper.getFirstDateOfTheMonth(), new Date());
+        String monthly = ShareHelper.createMonthly(allLoginData, DatesHelper.getFirstDateOfTheMonth(), new Date());
         i.putExtra(Intent.EXTRA_SUBJECT, "Monthly report for " + DatesHelper.getMonthName());
         i.putExtra(Intent.EXTRA_TEXT, monthly);
         return i;

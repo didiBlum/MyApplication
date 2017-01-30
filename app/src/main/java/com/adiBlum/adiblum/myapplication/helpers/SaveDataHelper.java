@@ -3,11 +3,16 @@ package com.adiBlum.adiblum.myapplication.helpers;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.adiBlum.adiblum.myapplication.model.AllLoginData;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,15 +23,19 @@ public class SaveDataHelper {
 
     private static String FILENAME = "myHours";
 
-    public static void addToFile(String s, Context ctx) {
+    public static void addToFile(AllLoginData allLoginData, Context ctx) {
+        FileOutputStream fos;
         try {
-            FileOutputStream fos = ctx.openFileOutput(FILENAME, Context.MODE_APPEND);
-            fos.write(s.getBytes());
+            fos = ctx.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            ObjectOutputStream os = new ObjectOutputStream(fos);
+            os.writeObject(allLoginData);
+            os.close();
             fos.close();
-            System.out.println("saved to file: " + s);
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("failed to write to file");
         }
+
     }
 
 
@@ -47,17 +56,13 @@ public class SaveDataHelper {
         return sb.toString();
     }
 
-    public static Map<String, Double> getDataFromFile(Context ctx) {
-        Map<String, Double> stringDoubleHashMap = new HashMap<>();
-        String readFile;
-        try {
-            readFile = readFile(ctx);
-            return parseFile(readFile);
-        } catch (IOException e) {
-            System.out.println("unable to read file");
-            return stringDoubleHashMap;
-        }
-
+    public static AllLoginData getDataFromFile(Context ctx) throws IOException, ClassNotFoundException {
+        FileInputStream fis = ctx.openFileInput(FILENAME);
+        ObjectInputStream is = new ObjectInputStream(fis);
+        AllLoginData allLoginData = (AllLoginData) is.readObject();
+        is.close();
+        fis.close();
+        return allLoginData;
     }
 
     private static Map<String, Double> parseFile(String readFile) {

@@ -11,9 +11,11 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
+import com.adiBlum.adiblum.myapplication.activities.HistoryActivity;
+import com.adiBlum.adiblum.myapplication.activities.SummaryActivity;
 import com.adiBlum.adiblum.myapplication.helpers.DataFetcherService;
+import com.adiBlum.adiblum.myapplication.model.AllLoginData;
 import com.google.gson.Gson;
 import com.neura.resources.situation.SituationData;
 
@@ -61,12 +63,12 @@ public class TabFragment extends Fragment {
         return view;
     }
 
-    public void updateViews(Map<String, Double> datesToHours) {
+    public void updateViews(AllLoginData allLoginData) {
         SummaryActivity summaryActivity = (SummaryActivity) getSummary();
-        summaryActivity.start(datesToHours);
+        summaryActivity.start(allLoginData);
 
         HistoryActivity historyActivity = (HistoryActivity) adapter.getItem(1);
-        historyActivity.start(datesToHours);
+        historyActivity.start(allLoginData);
     }
 
     private Fragment getSummary() {

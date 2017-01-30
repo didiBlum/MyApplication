@@ -11,6 +11,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.widget.Toast;
 
+import com.adiBlum.adiblum.myapplication.activities.MainActivityNew;
 import com.neura.resources.sensors.SensorType;
 import com.neura.standalonesdk.util.NeuraStateAlertReceiver;
 

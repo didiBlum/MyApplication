@@ -1,4 +1,4 @@
-package com.adiBlum.adiblum.myapplication;
+package com.adiBlum.adiblum.myapplication.activities;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -12,8 +12,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.adiBlum.adiblum.myapplication.R;
 import com.adiBlum.adiblum.myapplication.helpers.DatesHelper;
 import com.adiBlum.adiblum.myapplication.helpers.SaveDataHelper;
+import com.adiBlum.adiblum.myapplication.model.AllLoginData;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,7 +32,7 @@ public class HistoryActivity extends Fragment {
     private static final String dateFormat = "EEE, MMM d";
 
     private View view;
-    Map<String, Double> data;
+    AllLoginData allLoginData;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -39,8 +41,8 @@ public class HistoryActivity extends Fragment {
         return view;
     }
 
-    public void start(Map<String, Double> data) {
-        this.data = data;
+    public void start(AllLoginData allLoginData) {
+        this.allLoginData = allLoginData;
         if (isVisible()) {
             final ListView listview = (ListView) view.findViewById(R.id.history_listView);
             setList(listview);
@@ -48,7 +50,7 @@ public class HistoryActivity extends Fragment {
     }
 
     private void setList(ListView listview) {
-        Date current = DatesHelper.getOldestDay(data);
+        Date current = DatesHelper.getOldestDay(allLoginData.getDateToLoginData());
         if (current == null) {
             current = DatesHelper.getFirstDateOfTheMonth();
         }
@@ -81,8 +83,7 @@ public class HistoryActivity extends Fragment {
     }
 
     private void addDateData(Date current, List<String> list, List<String> monthsIndex) {
-        String stringDate = SaveDataHelper.getStringDate(current);
-        Double timeAtWork = data.get(stringDate);
+        Double timeAtWork = allLoginData.getDataForDate(current).getTotalTime();
         String prettyDate = new SimpleDateFormat(dateFormat, Locale.getDefault()).format(current);
         if (prettyDate.equals(new SimpleDateFormat(dateFormat, Locale.getDefault()).format(new Date()))) {
             prettyDate = "Today";

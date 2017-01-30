@@ -6,13 +6,7 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.adiBlum.adiblum.myapplication.NeuraConnection;
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.adiBlum.adiblum.myapplication.model.AllLoginData;
 import com.google.gson.Gson;
 import com.neura.resources.insights.DailySummaryCallbacks;
 import com.neura.resources.insights.DailySummaryData;
@@ -21,19 +15,12 @@ import com.neura.resources.situation.SituationCallbacks;
 import com.neura.resources.situation.SituationData;
 import com.neura.standalonesdk.service.NeuraApiClient;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 public class DataFetcherService {
 
@@ -41,8 +28,9 @@ public class DataFetcherService {
     public static final String USER_SITUATION_RESULT = "UserSituation";
     private static DataFetcherService instance = null;
     int pendingAnswers = 0;
-    private Map<String, Double> datesToHours = new HashMap<>();
-    public static final String URL = "https://wapi.theneura.com/v1/users/profile/daily_summary?date=";
+//    private Map<String, Double> datesToHours = new HashMap<>();
+
+    private AllLoginData allLoginData;
 
     private synchronized void incPendingAnswers() {
         pendingAnswers++;
@@ -66,14 +54,13 @@ public class DataFetcherService {
     public void requestDailySummaryFromClient(final Date date, final Context context) {
         incPendingAnswers();
 //        System.out.println("getting data from server for " + date);
-        final String dateToday = new SimpleDateFormat("yyyy-MM-dd").format(date);
 
         NeuraApiClient client = NeuraConnection.getClient();
         client.getDailySummary(date.getTime(), new DailySummaryCallbacks() {
             @Override
             public void onSuccess(DailySummaryData dailySummaryData) {
                 double timeSpentAtWork = getTimeSpentAtWork(dailySummaryData);
-                handleHttpResultForDay(timeSpentAtWork, dateToday, context);
+                handleHttpResultForDay(timeSpentAtWork, date, context);
             }
 
             @Override
@@ -84,22 +71,20 @@ public class DataFetcherService {
 
     }
 
-    private void handleHttpResultForDay(double timeSpentAtWork, String dateToday, Context context) {
-//        System.out.println("timeSpentAtWork: " + timeSpentAtWork / 60 / 60 + " hours");
-        SaveDataHelper.addToFile(dateToday + ":" + timeSpentAtWork + ";",
-                context);
-        datesToHours.put(dateToday, timeSpentAtWork);
+    private void handleHttpResultForDay(double timeSpentAtWork, Date dateToday, Context context) {
+        allLoginData.updateTimeAtPlace(dateToday, timeSpentAtWork);
         decPendingAnswers();
-//        System.out.println("pendingAnswers-- now is: " + getPendingAnswers());
         if (getPendingAnswers() == 0) {
             sendSummaryResults(context);
         }
+        SaveDataHelper.addToFile(allLoginData, context);
     }
 
     private void sendSummaryResults(Context context) {
+        System.out.println("sending summary results: " + allLoginData.getDateToLoginData().size());
         LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(context);
         Intent intent = new Intent(DATA_FETCHER_SERVICE_RESULT);
-        intent.putExtra(DATA_FETCHER_SERVICE_RESULT, (Serializable) datesToHours);
+        intent.putExtra(DATA_FETCHER_SERVICE_RESULT, allLoginData);
         broadcastManager.sendBroadcast(intent);
     }
 
@@ -113,15 +98,12 @@ public class DataFetcherService {
     }
 
     private boolean getDataForDay(Date date, Context context) {
-//        System.out.println("getting data for day: " + date);
-
         if (SaveDataHelper.isSameDay(date, new Date()) ||
                 SaveDataHelper.isSameDay(date, DatesHelper.getYesterday())) { // always ask for today
             requestDailySummaryFromClient(date, context);
             return false;
         }
-        String stringDate = SaveDataHelper.getStringDate(date);
-        if (!datesToHours.containsKey(stringDate)) {
+        if (!allLoginData.getDateToLoginData().containsKey(date)) {
             requestDailySummaryFromClient(date, context);
             return false;
         }
@@ -129,7 +111,16 @@ public class DataFetcherService {
     }
 
     public boolean askForDataForDatesOfMonth(Context context) {
-        datesToHours = SaveDataHelper.getDataFromFile(context);
+        try {
+            allLoginData = SaveDataHelper.getDataFromFile(context);
+        } catch (IOException | ClassNotFoundException e) {
+            if (allLoginData == null) {
+                allLoginData = new AllLoginData();
+            }
+            e.printStackTrace();
+            System.out.println("failed to read file");
+        }
+
         Date current = DatesHelper.getFirstDateOfTheMonth();
         Calendar cal = Calendar.getInstance();
         cal.setTime(current);
@@ -176,7 +167,7 @@ public class DataFetcherService {
 
             @Override
             public void onFailure(Bundle bundle, int i) {
-                System.out.println("failed to get response of timestamp: " + timestamp) ;
+                System.out.println("failed to get response of timestamp: " + timestamp);
             }
         }, timestamp);
     }

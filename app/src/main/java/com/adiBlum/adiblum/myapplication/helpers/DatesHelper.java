@@ -4,6 +4,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
 
+import com.adiBlum.adiblum.myapplication.model.DateLogData;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -42,7 +44,7 @@ public class DatesHelper {
         return simpleDateFormat.parse(s);
     }
 
-    public static Date getOldestDay(Map<String, Double> data) {
+    public static Date getOldestDay(Map<Date, DateLogData> data) {
         if (data == null || data.isEmpty()) {
             return null;
         } else {
@@ -52,22 +54,16 @@ public class DatesHelper {
     }
 
     @Nullable
-    private static Date findOldestDateInList(Map<String, Double> data) {
+    private static Date findOldestDateInList(Map<Date, DateLogData> data) {
         Date oldest;
-        Iterator<String> iterator = data.keySet().iterator();
-        String string = iterator.next();
-        try {
-            oldest = getDateFromString(string);
-            for (String s : data.keySet()) {
-                Date newDate = getDateFromString(s);
-                if (newDate.before(oldest)) {
-                    oldest = newDate;
-                }
+        Iterator<Date> iterator = data.keySet().iterator();
+        oldest = iterator.next();
+        for (Date d : data.keySet()) {
+            if (d.before(oldest)) {
+                oldest = d;
             }
-            return oldest;
-        } catch (ParseException e) {
-            return null;
         }
+        return oldest;
     }
 
     public static int getDayOfMonth(Date date) {

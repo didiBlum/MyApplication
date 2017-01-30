@@ -4,6 +4,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.adiBlum.adiblum.myapplication.activities.HistoryActivity;
+import com.adiBlum.adiblum.myapplication.activities.SummaryActivity;
+
 public class PagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs;
     SummaryActivity summaryActivity = new SummaryActivity();
