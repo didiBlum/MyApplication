@@ -18,13 +18,7 @@ public class AllLoginData implements Serializable {
     }
 
     public void updateTimeAtPlace(Date date, double totalTime) {
-        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        Date todayWithZeroTime = null;
-        try {
-            todayWithZeroTime = formatter.parse(formatter.format(date));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        Date todayWithZeroTime = getDateZero(date);
         if (dateToLoginData.containsKey(todayWithZeroTime)) {
             DateLogData dateLogData = dateToLoginData.get(todayWithZeroTime);
             dateLogData.setTotalTime(totalTime);
@@ -33,18 +27,24 @@ public class AllLoginData implements Serializable {
         }
     }
 
+    public void updateLoginEvent(Date date, LogEvent logEvent) {
+        DateLogData dataForDate = getDataForDate(date);
+        dataForDate.addLogEvent(logEvent);
+    }
+
     public DateLogData getDataForDate(Date date) {
-        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        Date todayWithZeroTime = null;
+        Date todayWithZeroTime = getDateZero(date);
+        return dateToLoginData.get(todayWithZeroTime);
+    }
+
+    private Date getDateZero(Date date) {
         try {
-            todayWithZeroTime = formatter.parse(formatter.format(date));
+            DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            return formatter.parse(formatter.format(date));
         } catch (ParseException e) {
             e.printStackTrace();
+            return null;
         }
-        date.setHours(0);
-        date.setMinutes(0);
-        date.setSeconds(0);
-        return dateToLoginData.get(todayWithZeroTime);
     }
 
     @Override

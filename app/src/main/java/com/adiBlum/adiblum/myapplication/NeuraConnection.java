@@ -73,7 +73,7 @@ public class NeuraConnection {
                                         + "AccessToken = " + authenticateData.getAccessToken());
                                 String userToken = authenticateData.getAccessToken();
                                 saveAccessToken(userToken);
-                                setAction(ctx);
+                                setAction(mainActivity);
                                 subscribeToEvents(mPermissions);
                                 mNeuraApiClient.registerFirebaseToken(
                                         mainActivity, FirebaseInstanceId.getInstance().getToken());
@@ -105,20 +105,16 @@ public class NeuraConnection {
         });
     }
 
-    private static void setAction(final Context ctx) {
-
-//        if (SDKUtils.isConnected(ctx, mNeuraApiClient)) {
+    private static void setAction(final MainActivityNew mainActivity) {
         String eventName = "userArrivedToWork";
-        if (mNeuraApiClient.isMissingDataForEvent(eventName)) { //1
+        if (mNeuraApiClient.isMissingDataForEvent(eventName)) {
             mNeuraApiClient.getMissingDataForEvent(eventName, new PickerCallback() {
                 @Override
                 public void onResult(boolean b) {
-                    //Result when returning from home picker
-//                        setCurrentUserLocation(ctx);
+                    mainActivity.askForData();
                 }
             });
         }
-//        }
     }
 
     public static String getAccessToken(Context ctx) {

@@ -28,9 +28,6 @@ import com.adiBlum.adiblum.myapplication.model.AllLoginData;
 import com.neura.standalonesdk.util.SDKUtils;
 import com.splunk.mint.Mint;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class MainActivityNew extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String IS_FIRST_RUN = "isFirstRun";
@@ -56,6 +53,8 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
         Mint.initAndStartSession(this.getApplication(), "3c9e4d9e");
 //        PeriodicDataFetchTask.scheduleRepeat(getApplicationContext());
     }
+
+
 
     private void setBroadcast() {
         broadcastReceiver = new BroadcastReceiver() {

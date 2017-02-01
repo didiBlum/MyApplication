@@ -43,4 +43,8 @@ public class DateLogData implements Serializable {
     public void setTotalTime(double totalTime) {
         this.totalTime = totalTime;
     }
+
+    public void addLogEvent(LogEvent logEvent) {
+        logEvents.add(logEvent);
+    }
 }

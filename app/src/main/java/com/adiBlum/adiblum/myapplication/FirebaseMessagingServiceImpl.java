@@ -10,11 +10,16 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
 import com.adiBlum.adiblum.myapplication.activities.MainActivityNew;
+import com.adiBlum.adiblum.myapplication.helpers.SaveDataHelper;
+import com.adiBlum.adiblum.myapplication.model.AllLoginData;
+import com.adiBlum.adiblum.myapplication.model.LogEvent;
+import com.adiBlum.adiblum.myapplication.model.LoginState;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.neura.standalonesdk.events.NeuraEvent;
 import com.neura.standalonesdk.events.NeuraPushCommandFactory;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -35,9 +40,20 @@ public class FirebaseMessagingServiceImpl extends FirebaseMessagingService {
             String format = getTime(event);
             if (event.getEventName().equals("userArrivedToWork")) {
                 generateNotification(getApplicationContext(), "Arrived to work at " + format, "");
+                addEvent(new LogEvent(LoginState.IN, event.getEventTimestamp()));
             } else if (event.getEventName().equals("userLeftWork")) {
                 generateNotification(getApplicationContext(), "Left work at " + format, "See your daily working time");
+                addEvent(new LogEvent(LoginState.OUT, event.getEventTimestamp()));
             }
+        }
+    }
+
+    private void addEvent(LogEvent logEvent) {
+        try {
+            AllLoginData allLoginData = SaveDataHelper.getDataFromFile(getApplicationContext());
+            allLoginData.updateLoginEvent(new Date(), logEvent);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
