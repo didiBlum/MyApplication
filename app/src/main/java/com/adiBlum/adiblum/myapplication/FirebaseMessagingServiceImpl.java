@@ -52,6 +52,7 @@ public class FirebaseMessagingServiceImpl extends FirebaseMessagingService {
         try {
             AllLoginData allLoginData = SaveDataHelper.getDataFromFile(getApplicationContext());
             allLoginData.updateLoginEvent(new Date(), logEvent);
+            SaveDataHelper.addToFile(allLoginData, getApplicationContext());
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

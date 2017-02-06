@@ -47,4 +47,46 @@ public class DateLogData implements Serializable {
     public void addLogEvent(LogEvent logEvent) {
         logEvents.add(logEvent);
     }
+
+    public long getFirstLogin() {
+        long early = Long.MAX_VALUE;
+        if (logEvents != null && logEvents.size() > 0) {
+            for (LogEvent logEvent : logEvents) {
+                if (logEvent.getState().equals(LoginState.IN)) {
+                    if (logEvent.getTimestamp() < early) {
+                        early = logEvent.getTimestamp();
+                    }
+                }
+            }
+        }
+        if (early == Long.MAX_VALUE) {
+            early = -1;
+        }
+        System.out.println("early: " + early);
+        return early;
+    }
+
+    public long getLastLogout() {
+        long latest = -1;
+        if (logEvents != null && logEvents.size() > 0) {
+            for (LogEvent logEvent : logEvents) {
+                if (logEvent.getState().equals(LoginState.OUT)) {
+                    if (logEvent.getTimestamp() > latest) {
+                        latest = logEvent.getTimestamp();
+                    }
+                }
+            }
+        }
+        System.out.println("lastest: " + latest);
+        return latest;
+    }
+
+    @Override
+    public String toString() {
+        return "DateLogData{" +
+                "logEvents=" + logEvents +
+                ", date=" + date +
+                ", totalTime=" + totalTime +
+                '}';
+    }
 }

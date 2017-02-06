@@ -28,6 +28,7 @@ public class AllLoginData implements Serializable {
     }
 
     public void updateLoginEvent(Date date, LogEvent logEvent) {
+        System.out.println("updating log event " + logEvent);
         DateLogData dataForDate = getDataForDate(date);
         dataForDate.addLogEvent(logEvent);
     }

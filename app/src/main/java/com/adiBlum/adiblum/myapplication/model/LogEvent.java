@@ -30,4 +30,12 @@ public class LogEvent implements Serializable {
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
+
+    @Override
+    public String toString() {
+        return "LogEvent{" +
+                "state=" + state +
+                ", timestamp=" + timestamp +
+                '}';
+    }
 }
