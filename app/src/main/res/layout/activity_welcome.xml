@@ -40,7 +40,7 @@
         android:id="@+id/textView2"
         android:layout_marginTop="20dp"
         android:textStyle="bold"
-        android:textSize="15sp"
+        android:textSize="20sp"
         android:textColor="#29ABE1"
         android:layout_gravity="center_horizontal"
         android:gravity="center"/>
@@ -63,5 +63,18 @@
         android:background="#29ABE1"
         android:typeface="monospace"
          />
+
+    <TextView
+        android:layout_width="325dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/welcome_phone_description"
+        android:id="@+id/textView3"
+        android:layout_marginTop="25dp"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:textColor="#29ABE1"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"/>
 
 </LinearLayout>

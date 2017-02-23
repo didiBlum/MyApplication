@@ -23,14 +23,21 @@ import com.adiBlum.adiblum.myapplication.NeuraConnection;
 import com.adiBlum.adiblum.myapplication.R;
 import com.adiBlum.adiblum.myapplication.TabFragment;
 import com.adiBlum.adiblum.myapplication.helpers.DataFetcherService;
+import com.adiBlum.adiblum.myapplication.helpers.DatesHelper;
 import com.adiBlum.adiblum.myapplication.helpers.ShareHelper;
 import com.adiBlum.adiblum.myapplication.model.AllLoginData;
 import com.neura.standalonesdk.util.SDKUtils;
 import com.splunk.mint.Mint;
 
+import java.util.Date;
+
 public class MainActivityNew extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String IS_FIRST_RUN = "isFirstRun";
+    private static final String INSTALLATION_DATE = "installationDate";
+    public static final int SAVE_SALARY_ACTIVITY_RESULT = 1;
+    public static final int WELCOME_ACTIVITY_RESULT = 0;
+    public static final int SETTINGS_ACTIVITY_RESULT = 4;
     private AllLoginData allLoginData;
 
     private BroadcastReceiver broadcastReceiver;
@@ -53,7 +60,6 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
         Mint.initAndStartSession(this.getApplication(), "3c9e4d9e");
 //        PeriodicDataFetchTask.scheduleRepeat(getApplicationContext());
     }
-
 
 
     private void setBroadcast() {
@@ -86,13 +92,11 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
         /**
          * Setup Drawer Toggle of the Toolbar
          */
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name,
                 R.string.app_name);
 
         mDrawerLayout.addDrawerListener(mDrawerToggle);
-
         mDrawerToggle.syncState();
     }
 
@@ -128,7 +132,7 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
     }
 
     private void showShare() {
-        Intent i = ShareHelper.getIntentForShare(allLoginData);
+        Intent i = ShareHelper.getIntentForShare(allLoginData, DatesHelper.getFirstDateOfTheMonth(), new Date());
         startActivity(Intent.createChooser(i, "Share via"));
     }
 
@@ -142,6 +146,7 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
                 .getBoolean(IS_FIRST_RUN, true);
         if (isFirstRun) {
             getSharedPreferences(this.getApplicationContext()).edit().putBoolean(IS_FIRST_RUN, false).commit();
+            getSharedPreferences(this.getApplicationContext()).edit().putLong(INSTALLATION_DATE, new Date().getTime()).apply();
             showWelcome();
         } else {
             mainFlow();
@@ -152,9 +157,9 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
         return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
 
-    private void showWelcome() {
+    public void showWelcome() {
         System.out.println("first time");
-        startActivityForResult(new Intent(this, WelcomeActivity.class), 0);
+        startActivityForResult(new Intent(this, WelcomeActivity.class), WELCOME_ACTIVITY_RESULT);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -184,10 +189,13 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
         mDrawerLayout.closeDrawers();
         switch (item.getItemId()) {
             case R.id.action_settings:
-                startActivityForResult(new Intent(getApplicationContext(), SaveSalaryDataActivity.class), 1);
+                startActivityForResult(new Intent(getApplicationContext(), SaveSalaryDataActivity.class), SAVE_SALARY_ACTIVITY_RESULT);
                 return true;
             case R.id.action_share:
                 showShare();
+                return true;
+            case R.id.notifications_settings:
+                showSettings();
                 return true;
             case R.id.feedback:
                 try {
@@ -198,5 +206,9 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
                 return true;
         }
         return false;
+    }
+
+    private void showSettings() {
+        startActivityForResult(new Intent(getApplicationContext(), SettingsActivity.class), SETTINGS_ACTIVITY_RESULT);
     }
 }

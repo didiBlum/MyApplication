@@ -5,7 +5,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
@@ -27,6 +29,9 @@ import java.util.Map;
 
 public class FirebaseMessagingServiceImpl extends FirebaseMessagingService {
 
+    public static final String ARRIVED = "userArrivedToWork";
+    public static final String LEFT = "userLeftWork";
+
     @Override
     public void onMessageReceived(RemoteMessage message) {
         super.onMessageReceived(message);
@@ -38,14 +43,26 @@ public class FirebaseMessagingServiceImpl extends FirebaseMessagingService {
 
             assert event != null;
             String format = getTime(event);
-            if (event.getEventName().equals("userArrivedToWork")) {
-                generateNotification(getApplicationContext(), "Arrived to work at " + format, "");
+            if (event.getEventName().equals(ARRIVED)) {
                 addEvent(new LogEvent(LoginState.IN, event.getEventTimestamp()));
-            } else if (event.getEventName().equals("userLeftWork")) {
-                generateNotification(getApplicationContext(), "Left work at " + format, "See your daily working time");
+                if (shouldSendNotification(ARRIVED)) {
+                    generateNotification(getApplicationContext(), "Arrived to work at " + format, "");
+                }
+            } else if (event.getEventName().equals(LEFT)) {
                 addEvent(new LogEvent(LoginState.OUT, event.getEventTimestamp()));
+                if (shouldSendNotification(LEFT)) {
+                    generateNotification(getApplicationContext(), "Left work at " + format, "See your daily working time");
+                }
             }
         }
+    }
+
+    private boolean shouldSendNotification(String eventName) {
+        SharedPreferences sharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        if (eventName.equals(ARRIVED)) {
+            return sharedPrefs.getBoolean("arrived_notification", false);
+        } else return sharedPrefs.getBoolean("leave_notification", false);
     }
 
     private void addEvent(LogEvent logEvent) {

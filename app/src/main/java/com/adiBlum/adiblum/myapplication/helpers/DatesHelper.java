@@ -85,7 +85,6 @@ public class DatesHelper {
         return cal.getTime();
     }
 
-
     @NonNull
     public static String getTimestampTime(long startTimestamp) {
         Calendar cal = Calendar.getInstance();

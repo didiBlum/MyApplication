@@ -1,22 +1,32 @@
 package com.adiBlum.adiblum.myapplication.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.Window;
 import android.widget.EditText;
 
 import com.adiBlum.adiblum.myapplication.R;
 
-public class SaveSalaryDataActivity extends Activity {
+public class SaveSalaryDataActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.set_salary);
         initTextViewsWithVals();
+
+        ActionBar myChildToolbar = getSupportActionBar();
+        if (myChildToolbar == null) {
+            System.out.println("adi - null ");
+        } else {
+            myChildToolbar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void initTextViewsWithVals() {
@@ -41,8 +51,7 @@ public class SaveSalaryDataActivity extends Activity {
     private void putSalary(SharedPreferences.Editor editor, EditText editText, String attributeName) {
         if (editText.getText().length() > 0) {
             editor.putString(attributeName, editText.getText().toString());
-        }
-        else {
+        } else {
             editor.putString(attributeName, "0");
         }
     }

@@ -15,23 +15,41 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.MainActivityNew">
+        <activity
+            android:name=".activities.MainActivityNew"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity android:name=".activities.WelcomeActivity" />
-        <activity android:name="com.adiBlum.adiblum.myapplication.StatisticsActivity" />
-        <activity android:name=".activities.SaveSalaryDataActivity" />
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:label="@string/notifications_settings"
+            android:parentActivityName=".activities.MainActivityNew">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainActivityNew" />
+        </activity>
+        <activity
+            android:name=".activities.SaveSalaryDataActivity"
+            android:label="bla"
+            android:parentActivityName=".activities.MainActivityNew">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainActivityNew" />
+        </activity>
+
 
         <!--<receiver-->
-            <!--android:name="com.adiBlum.adiblum.myapplication.NeuraEventsBroadcastReceiver"-->
-            <!--android:permission="com.google.android.c2dm.permission.SEND">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-                <!--<category android:name="com.example.adiblum.myapplication" />-->
-            <!--</intent-filter>-->
+        <!--android:name="com.adiBlum.adiblum.myapplication.NeuraEventsBroadcastReceiver"-->
+        <!--android:permission="com.google.android.c2dm.permission.SEND">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.MAIN" />-->
+        <!--<category android:name="com.example.adiblum.myapplication" />-->
+        <!--</intent-filter>-->
         <!--</receiver>-->
 
         <receiver
@@ -43,14 +61,14 @@
             </intent-filter>
         </receiver>
 
-        <service
-            android:name=".FirebaseMessagingServiceImpl">
+        <service android:name=".FirebaseMessagingServiceImpl">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <service android:name=".helpers.PeriodicDataFetchTask"
+        <service
+            android:name=".helpers.PeriodicDataFetchTask"
             android:exported="true"
             android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
             <intent-filter>

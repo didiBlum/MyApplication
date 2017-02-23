@@ -91,6 +91,7 @@ public class NeuraConnection {
                             public void onFailure(int i) {
                                 Log.e(getClass().getSimpleName(), "Failed to authenticate with neura. "
                                         + "Reason : " + SDKUtils.errorCodeToString(i));
+                                mainActivity.showWelcome();
                             }
                         });
                     }

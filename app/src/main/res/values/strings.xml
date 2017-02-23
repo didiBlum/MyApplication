@@ -2,7 +2,7 @@
     <string name="app_name">Auto Work Log</string>
     <string name="app_uid_production">9d862fb23e82228c9bb6a35ba7a66ef5094e58dc175ffee7982e8043687ff701</string>
     <string name="app_secret_production">149e8af8df917914f145cedb4d68f36981feb7cbbebeb8046a8049b307de489c</string>
-    <string name="settings">Salary Settings (Beta)</string>
+    <string name="salary_settings">Salary Settings (Beta)</string>
     <string name="share">Send monthly report</string>
     <string name="statistics">Statistics</string>
     <string name="today">Today:</string>
@@ -12,8 +12,8 @@
     <string name="this_week">This week:</string>
     <string name="how_much_i_apos_ve_made">My Working Hours</string>
     <string name="welcome_to_auto_work_log">Auto Work Log</string>
-    <string name="welcome_description">Automatically log your work time to help you calculate your pay check.\n\n\nSecurely and privately manage your data using your Neura account without having to do any manual logging.
-    </string>
+    <string name="welcome_description">Automatically track your work time without having to do any manual logging.</string>
+    <string name="welcome_phone_description">Your phone number is used as your account ID. It will not be used or shared with anyone else.</string>
     <string name="let_apos_s_get_started">Let\'s get started!</string>
     <string name="hourly_salary">Hourly salary</string>
     <string name="additional_daily_transportation_meals">Daily Stipend (transportation, meals)</string>
@@ -23,4 +23,5 @@
     <string name="history_action_name">History</string>
     <string name="currently">Currently:</string>
     <string name="send_us_feedback">Send us feedback</string>
+    <string name="notifications_settings">Notifications settings</string>
 </resources>

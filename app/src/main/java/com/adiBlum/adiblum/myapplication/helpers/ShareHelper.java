@@ -58,10 +58,10 @@ public class ShareHelper {
     }
 
     @NonNull
-    public static Intent getIntentForShare(AllLoginData allLoginData) {
+    public static Intent getIntentForShare(AllLoginData allLoginData, Date start, Date end) {
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("text/plain");
-        String monthly = ShareHelper.createMonthly(allLoginData, DatesHelper.getFirstDateOfTheMonth(), new Date());
+        String monthly = ShareHelper.createMonthly(allLoginData, start, end);
         i.putExtra(Intent.EXTRA_SUBJECT, "Monthly report for " + DatesHelper.getMonthName());
         i.putExtra(Intent.EXTRA_TEXT, monthly);
         return i;
