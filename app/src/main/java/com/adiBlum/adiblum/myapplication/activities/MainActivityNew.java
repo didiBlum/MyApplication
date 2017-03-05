@@ -18,17 +18,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.adiBlum.adiblum.myapplication.NeuraConnection;
 import com.adiBlum.adiblum.myapplication.R;
 import com.adiBlum.adiblum.myapplication.TabFragment;
 import com.adiBlum.adiblum.myapplication.helpers.DataFetcherService;
-import com.adiBlum.adiblum.myapplication.helpers.DatesHelper;
 import com.adiBlum.adiblum.myapplication.helpers.ShareHelper;
 import com.adiBlum.adiblum.myapplication.model.AllLoginData;
+import com.leavjenn.smoothdaterangepicker.date.SmoothDateRangePickerFragment;
 import com.neura.standalonesdk.util.SDKUtils;
 import com.splunk.mint.Mint;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class MainActivityNew extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -131,8 +133,9 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
         return true;
     }
 
-    private void showShare() {
-        Intent i = ShareHelper.getIntentForShare(allLoginData, DatesHelper.getFirstDateOfTheMonth(), new Date());
+    private void showShare(Date start, Date end) {
+//        Intent i = ShareHelper.getIntentForShare(allLoginData, DatesHelper.getFirstDateOfTheMonth(), new Date());
+        Intent i = ShareHelper.getIntentForShare(start, end, getApplicationContext());
         startActivity(Intent.createChooser(i, "Share via"));
     }
 
@@ -192,7 +195,8 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
                 startActivityForResult(new Intent(getApplicationContext(), SaveSalaryDataActivity.class), SAVE_SALARY_ACTIVITY_RESULT);
                 return true;
             case R.id.action_share:
-                showShare();
+//                showShare(DatesHelper.getFirstDateOfTheMonth(), new Date());
+                setDatePicker(this.getCurrentFocus());
                 return true;
             case R.id.notifications_settings:
                 showSettings();
@@ -210,5 +214,26 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
 
     private void showSettings() {
         startActivityForResult(new Intent(getApplicationContext(), SettingsActivity.class), SETTINGS_ACTIVITY_RESULT);
+    }
+
+    public void setDatePicker(View view) {
+        Calendar calendar = Calendar.getInstance();
+        SmoothDateRangePickerFragment smoothDateRangePickerFragment = SmoothDateRangePickerFragment.newInstance(
+                new SmoothDateRangePickerFragment.OnDateRangeSetListener() {
+                    @Override
+                    public void onDateRangeSet(SmoothDateRangePickerFragment view,
+                                               int yearStart, int monthStart,
+                                               int dayStart, int yearEnd,
+                                               int monthEnd, int dayEnd) {
+                        Date startDate = new Date(yearStart - 1900, monthStart, dayStart);
+                        Date endDate = new Date(yearEnd - 1900, monthEnd, dayEnd);
+//                        askForData(startDate, endDate);
+                        showShare(startDate, endDate); // todo - wait here!
+                    }
+                },
+                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 1);
+
+        smoothDateRangePickerFragment.setMaxDate(calendar);
+        smoothDateRangePickerFragment.show(getFragmentManager(), "smoothDateRangePicker");
     }
 }

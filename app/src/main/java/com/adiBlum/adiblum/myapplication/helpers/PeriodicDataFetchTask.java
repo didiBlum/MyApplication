@@ -11,6 +11,9 @@ import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.google.android.gms.gcm.TaskParams;
 
+import java.util.Calendar;
+import java.util.Date;
+
 public class PeriodicDataFetchTask extends GcmTaskService {
 
     public static final String DATA_FETCHER_SERVICE_RESULT = "DataFetcherServiceResult";
@@ -24,7 +27,11 @@ public class PeriodicDataFetchTask extends GcmTaskService {
 
     @Override
     public int onRunTask(TaskParams taskParams) {
-        DataFetcherService.getInstance().askForDataForDatesOfMonth(getApplicationContext());
+//        Date firstDateOfTheMonth = DatesHelper.getFirstDateOfTheMonth();
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTime(firstDateOfTheMonth);
+//        cal.add(Calendar.DATE, -8);
+//        DataFetcherService.getInstance().askForDataForDatesOfMonth();
         return GcmNetworkManager.RESULT_SUCCESS;
     }
 

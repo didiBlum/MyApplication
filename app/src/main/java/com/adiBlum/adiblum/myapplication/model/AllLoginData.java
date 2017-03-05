@@ -1,6 +1,10 @@
 package com.adiBlum.adiblum.myapplication.model;
 
 
+import android.content.Context;
+
+import com.adiBlum.adiblum.myapplication.helpers.SaveDataHelper;
+
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -27,14 +31,20 @@ public class AllLoginData implements Serializable {
         }
     }
 
-    public void updateLoginEvent(Date date, LogEvent logEvent) {
-        DateLogData dataForDate = getDataForDate(date);
+    public void updateLoginEvent(Date date, LogEvent logEvent, Context context) {
+        DateLogData dataForDate = getDataForDate(date, context);
         dataForDate.addLogEvent(logEvent);
     }
 
-    public DateLogData getDataForDate(Date date) {
+    public DateLogData getDataForDate(Date date, Context context) {
         Date todayWithZeroTime = getDateZero(date);
-        return dateToLoginData.get(todayWithZeroTime);
+        DateLogData dateLogData = dateToLoginData.get(todayWithZeroTime);
+        if (dateLogData == null){
+            dateLogData = new DateLogData();
+            dateToLoginData.put(date, dateLogData);
+            SaveDataHelper.addToFile(this, context);
+        }
+        return dateLogData;
     }
 
     private Date getDateZero(Date date) {

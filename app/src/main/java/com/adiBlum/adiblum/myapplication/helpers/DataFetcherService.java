@@ -25,10 +25,10 @@ import java.util.Date;
 public class DataFetcherService {
 
     public static final String DATA_FETCHER_SERVICE_RESULT = "DataFetcherServiceResult";
+    public static final String CUSTOM_DATA_FETCHER_SERVICE_RESULT = "CustomDataFetcherServiceResult";
     public static final String USER_SITUATION_RESULT = "UserSituation";
     private static DataFetcherService instance = null;
     int pendingAnswers = 0;
-//    private Map<String, Double> datesToHours = new HashMap<>();
 
     private AllLoginData allLoginData;
 
@@ -161,8 +161,10 @@ public class DataFetcherService {
         neuraApiClient.getUserSituation(new SituationCallbacks() {
             @Override
             public void onSuccess(SituationData situationData) {
-                System.out.println("received response for situation: " + situationData);
-                sendSituationDataResults(context, situationData);
+                if (situationData != null) {
+                    System.out.println("received response for situation: " + situationData);
+                    sendSituationDataResults(context, situationData);
+                }
             }
 
             @Override

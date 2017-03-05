@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 
 import com.adiBlum.adiblum.myapplication.model.AllLoginData;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class ShareHelper {
     private static final String COMMA_DELIMITER = ": ";
     private static final String NEW_LINE_SEPARATOR = "\n";
 
-    public static String createMonthly(AllLoginData allLoginData, Date startDate, Date endDate) {
+    public static String createMonthly(AllLoginData allLoginData, Date startDate, Date endDate, Context context) {
         String result = "";
         Calendar cal = Calendar.getInstance();
         cal.setTime(startDate);
@@ -25,26 +26,29 @@ public class ShareHelper {
         int workingDays = 0;
         while (startDate.before(endDate) || SaveDataHelper.isSameDay(startDate, endDate)) {
             String stringDate = SaveDataHelper.getStringDate(startDate);
-            if (allLoginData.getDateToLoginData().containsKey(startDate)) {
-                Double timeAtWork = allLoginData.getDataForDate(startDate).getTotalTime();
-                String formattedTimeAtWork = SaveDataHelper.getPrettyTimeString(timeAtWork);
-                if (timeAtWork == -1) {
-                    formattedTimeAtWork = "No data";
-                }
-                if (timeAtWork == 0) {
-                    formattedTimeAtWork = "Out of work";
-                } else {
-                    if (timeAtWork > 0) {
-                        totalTime += timeAtWork;
-                        workingDays++;
-                    }
-                }
-                result += NEW_LINE_SEPARATOR + stringDate + COMMA_DELIMITER + formattedTimeAtWork;
+            Double timeAtWork = allLoginData.getDataForDate(startDate, context).getTotalTime();
+            String formattedTimeAtWork = SaveDataHelper.getPrettyTimeString(timeAtWork);
+            if (timeAtWork == -1) {
+                formattedTimeAtWork = "No data";
             }
+            if (timeAtWork == 0) {
+                formattedTimeAtWork = "Out of work";
+            } else {
+                if (timeAtWork > 0) {
+                    totalTime += timeAtWork;
+                    workingDays++;
+                }
+            }
+            result += NEW_LINE_SEPARATOR + stringDate + COMMA_DELIMITER + formattedTimeAtWork;
             startDate = incDate(cal);
         }
-
-        String totalString = "Total Monthly: " + workingDays + " working days. Total time: " + SaveDataHelper.getPrettyTimeString(totalTime) + NEW_LINE_SEPARATOR;
+        String totalString;
+        if (totalTime <= 0) {
+            totalString = "Total: " + workingDays + " working days.";
+        }
+        else {
+            totalString = "Total: " + workingDays + " working days. Total time: " + SaveDataHelper.getPrettyTimeString(totalTime) + NEW_LINE_SEPARATOR;
+        }
         result = totalString + result;
 
         return result;
@@ -58,11 +62,19 @@ public class ShareHelper {
     }
 
     @NonNull
-    public static Intent getIntentForShare(AllLoginData allLoginData, Date start, Date end) {
+    public static Intent getIntentForShare(Date start, Date end, Context context) {
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType("text/plain");
-        String monthly = ShareHelper.createMonthly(allLoginData, start, end);
-        i.putExtra(Intent.EXTRA_SUBJECT, "Monthly report for " + DatesHelper.getMonthName());
+        AllLoginData dataFromFile;
+        try {
+            dataFromFile = SaveDataHelper.getDataFromFile(context);
+        } catch (IOException | ClassNotFoundException e) {
+            dataFromFile = new AllLoginData();
+        }
+        String monthly = ShareHelper.createMonthly(dataFromFile, start, end, context);
+        String startDate = SaveDataHelper.getStringDate(start);
+        String endDate = SaveDataHelper.getStringDate(end);
+        i.putExtra(Intent.EXTRA_SUBJECT, "Working hours report: " + startDate + " - " + endDate);
         i.putExtra(Intent.EXTRA_TEXT, monthly);
         return i;
     }
@@ -71,7 +83,7 @@ public class ShareHelper {
     public static Intent getIntentForFeedback(Context context) throws PackageManager.NameNotFoundException {
         Intent email = new Intent(Intent.ACTION_SEND);
         email.setType("text/email");
-        email.putExtra(Intent.EXTRA_EMAIL, new String[] { "autoworklog.feedback@gmail.com" });
+        email.putExtra(Intent.EXTRA_EMAIL, new String[]{"autoworklog.feedback@gmail.com"});
         PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
         String version = pInfo.versionName;
         int verCode = pInfo.versionCode;

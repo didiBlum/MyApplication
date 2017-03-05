@@ -158,7 +158,7 @@ public class SummaryActivity extends Fragment {
         System.out.println("update today with - " + allLoginData.getDateToLoginData().size());
         System.out.println("update today with - " + allLoginData);
         TextView textView = (TextView) summaryActivity.findViewById(R.id.dailyTextView);
-        Double timeSpentAtWork = allLoginData.getDataForDate(new Date()).getTotalTime();
+        Double timeSpentAtWork = allLoginData.getDataForDate(new Date(), getContext()).getTotalTime();
         int workingDays = 0;
         if (timeSpentAtWork > 0) {
             workingDays++;
@@ -185,7 +185,7 @@ public class SummaryActivity extends Fragment {
         Calendar cal = Calendar.getInstance();
         cal.setTime(end);
         while (end.after(start) || SaveDataHelper.isSameDay(start, end)) {
-            double currentVal = allLoginData.getDataForDate(end).getTotalTime();
+            double currentVal = allLoginData.getDataForDate(end, getContext()).getTotalTime();
             if (currentVal == -1.0) {
                 if (SaveDataHelper.isSameDay(end, new Date())) {
                     return new Date();
@@ -210,7 +210,7 @@ public class SummaryActivity extends Fragment {
         Calendar cal = Calendar.getInstance();
         cal.setTime(end);
         while (end.after(start) || SaveDataHelper.isSameDay(start, end)) {
-            double currentVal = allLoginData.getDataForDate(end).getTotalTime();
+            double currentVal = allLoginData.getDataForDate(end, getContext()).getTotalTime();
             if (currentVal ==-1.0) {
                 return true;
             }

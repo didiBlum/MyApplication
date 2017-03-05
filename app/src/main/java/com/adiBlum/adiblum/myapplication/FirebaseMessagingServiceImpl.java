@@ -44,12 +44,12 @@ public class FirebaseMessagingServiceImpl extends FirebaseMessagingService {
             assert event != null;
             String format = getTime(event);
             if (event.getEventName().equals(ARRIVED)) {
-                addEvent(new LogEvent(LoginState.IN, event.getEventTimestamp()));
+                addEvent(new LogEvent(LoginState.IN, event.getEventTimestamp()), getApplicationContext());
                 if (shouldSendNotification(ARRIVED)) {
                     generateNotification(getApplicationContext(), "Arrived to work at " + format, "");
                 }
             } else if (event.getEventName().equals(LEFT)) {
-                addEvent(new LogEvent(LoginState.OUT, event.getEventTimestamp()));
+                addEvent(new LogEvent(LoginState.OUT, event.getEventTimestamp()), getApplicationContext());
                 if (shouldSendNotification(LEFT)) {
                     generateNotification(getApplicationContext(), "Left work at " + format, "See your daily working time");
                 }
@@ -65,10 +65,10 @@ public class FirebaseMessagingServiceImpl extends FirebaseMessagingService {
         } else return sharedPrefs.getBoolean("leave_notification", false);
     }
 
-    private void addEvent(LogEvent logEvent) {
+    private void addEvent(LogEvent logEvent, Context applicationContext) {
         try {
             AllLoginData allLoginData = SaveDataHelper.getDataFromFile(getApplicationContext());
-            allLoginData.updateLoginEvent(new Date(), logEvent);
+            allLoginData.updateLoginEvent(new Date(), logEvent, applicationContext);
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

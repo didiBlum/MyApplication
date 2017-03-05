@@ -83,7 +83,7 @@ public class HistoryActivity extends Fragment {
     }
 
     private void addDateData(Date current, List<String> list, List<String> monthsIndex) {
-        Double timeAtWork = allLoginData.getDataForDate(current).getTotalTime();
+        Double timeAtWork = allLoginData.getDataForDate(current, getContext()).getTotalTime();
         String prettyDate = new SimpleDateFormat(dateFormat, Locale.getDefault()).format(current);
         if (prettyDate.equals(new SimpleDateFormat(dateFormat, Locale.getDefault()).format(new Date()))) {
             prettyDate = "Today";

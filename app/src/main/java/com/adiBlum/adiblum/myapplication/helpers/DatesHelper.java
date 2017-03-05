@@ -8,9 +8,11 @@ import com.adiBlum.adiblum.myapplication.model.DateLogData;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -92,5 +94,18 @@ public class DatesHelper {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         sdf.setTimeZone(tz);
         return sdf.format(new Date(startTimestamp * 1000));
+    }
+
+    private Calendar[] getMonthDates() {
+        List<Calendar> dates = new ArrayList<>();
+        Date start = DatesHelper.getFirstDateOfTheMonth();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(start);
+        while (start.before(new Date()) || SaveDataHelper.isSameDay(start, new Date())) {
+            dates.add(cal);
+            cal.add(Calendar.DATE, 1);
+            start = cal.getTime();
+        }
+        return dates.toArray(new Calendar[dates.size()]);
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 public class DateLogData implements Serializable {
     private List<LogEvent> logEvents;
     private Date date;
-    private double totalTime;
+    private double totalTime = -1;
 
     public DateLogData(List<LogEvent> logEvents, Date date, double totalTime) {
         this.logEvents = logEvents;
