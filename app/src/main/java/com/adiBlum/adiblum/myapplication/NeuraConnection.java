@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.adiBlum.adiblum.myapplication.activities.MainActivityNew;
+import com.adiBlum.adiblum.myapplication.helpers.SemanticsHelper;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.neura.resources.authentication.AuthenticateCallback;
 import com.neura.resources.authentication.AuthenticateData;
@@ -73,7 +74,7 @@ public class NeuraConnection {
                                         + "AccessToken = " + authenticateData.getAccessToken());
                                 String userToken = authenticateData.getAccessToken();
                                 saveAccessToken(userToken);
-                                setAction(mainActivity);
+                                setAction(mainActivity, ctx, userToken);
                                 subscribeToEvents(mPermissions);
                                 mNeuraApiClient.registerFirebaseToken(
                                         mainActivity, FirebaseInstanceId.getInstance().getToken());
@@ -106,15 +107,19 @@ public class NeuraConnection {
         });
     }
 
-    private static void setAction(final MainActivityNew mainActivity) {
+    private static void setAction(final MainActivityNew mainActivity, final Context ctx, final String userToken) {
         String eventName = "userArrivedToWork";
         if (mNeuraApiClient.isMissingDataForEvent(eventName)) {
             mNeuraApiClient.getMissingDataForEvent(eventName, new PickerCallback() {
                 @Override
                 public void onResult(boolean b) {
+                    SemanticsHelper.saveWorkplace(ctx, userToken);
                     mainActivity.askForData();
                 }
             });
+        }
+        else {
+            SemanticsHelper.saveWorkplace(ctx, userToken);
         }
     }
 
