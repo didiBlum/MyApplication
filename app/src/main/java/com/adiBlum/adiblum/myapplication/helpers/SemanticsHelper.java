@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.adiBlum.adiblum.myapplication.NeuraConnection;
+import com.adiBlum.adiblum.myapplication.activities.MainActivityNew;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -25,7 +26,7 @@ public class SemanticsHelper {
     public static final String WORK_LAT = "work_lat";
     public static final String WORK_LON = "work_lon";
 
-    public static void saveWorkplace(final Context context, final String userToken) {
+    public static void saveWorkplace(final Context context, final String userToken, final MainActivityNew mainActivity) {
         String url = "https://wapi.theneura.com/v1/nodes_semantics/locations";
         RequestQueue queue = Volley.newRequestQueue(context);
         StringRequest postRequest = new StringRequest(Request.Method.GET, url,
@@ -35,6 +36,7 @@ public class SemanticsHelper {
                         System.out.println("semantics are: " + response);
                         try {
                             saveResult(response, context);
+                            mainActivity.askForData();
                         } catch (JSONException e) {
                             System.out.println("semantics json error: " + e);
                         }

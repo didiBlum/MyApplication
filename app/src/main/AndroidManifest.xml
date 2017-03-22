@@ -8,6 +8,8 @@
         android:name="com.adiBlum.adiblum.myapplication.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
     <uses-permission android:name="com.example.adiblum.myapplication.permission.C2D_MESSAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.PERMISSION_GRANTED" />
 
     <application
         android:allowBackup="true"
@@ -67,14 +69,9 @@
             </intent-filter>
         </service>
 
-        <!--<service-->
-            <!--android:name=".helpers.PeriodicDataFetchTask"-->
-            <!--android:exported="true"-->
-            <!--android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />-->
-            <!--</intent-filter>-->
-        <!--</service>-->
+        <meta-data
+            android:name="com.google.android.awareness.API_KEY"
+            android:value="@string/google_play_awareness" />
 
     </application>
 

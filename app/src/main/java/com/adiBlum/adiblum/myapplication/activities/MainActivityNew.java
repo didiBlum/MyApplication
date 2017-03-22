@@ -24,6 +24,7 @@ import com.adiBlum.adiblum.myapplication.NeuraConnection;
 import com.adiBlum.adiblum.myapplication.R;
 import com.adiBlum.adiblum.myapplication.TabFragment;
 import com.adiBlum.adiblum.myapplication.helpers.DataFetcherService;
+import com.adiBlum.adiblum.myapplication.helpers.FencesCurrentSituation;
 import com.adiBlum.adiblum.myapplication.helpers.ShareHelper;
 import com.adiBlum.adiblum.myapplication.model.AllLoginData;
 import com.leavjenn.smoothdaterangepicker.date.SmoothDateRangePickerFragment;
@@ -119,7 +120,8 @@ public class MainActivityNew extends AppCompatActivity implements NavigationView
         if (!isDestroyed()) {
             DataFetcherService instance = DataFetcherService.getInstance();
             instance.askForDataForDatesOfMonth(getApplicationContext());
-            instance.getUserSituation(getApplicationContext());
+            FencesCurrentSituation fencesCurrentSituation = new FencesCurrentSituation();
+            fencesCurrentSituation.fetchCurrentSituation(getApplicationContext(), this);
         }
     }
 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="Notifications"
+        android:key="sync_category">
+
+        <CheckBoxPreference
+            android:key="arrived_notification"
+            android:summary="A notification will be received whenever you arrived at work"
+            android:title="Arrived to work"
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:key="leave_notification"
+            android:summary="A notification will be received whenever you leave work"
+            android:title="Leave work"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
+</PreferenceScreen>

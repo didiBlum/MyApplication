@@ -33,7 +33,7 @@ public class SummaryActivity extends Fragment {
     private SalaryCalculator salaryCalculator = new SalaryCalculator();
     private AllLoginData allLoginData;
     private static final String dateFormat = "MMM d";
-    SituationData situationData;
+    boolean situationData;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,42 +55,26 @@ public class SummaryActivity extends Fragment {
         showSpinner(false);
     }
 
-    public void updateSituation(SituationData situationData) {
-        this.situationData = situationData;
-        updateCurrent();
+    public void updateSituation(boolean inWork) {
+        System.out.println("updateSituation update in work? " + inWork);
+        this.situationData = inWork;
+        updateCurrent(inWork);
     }
 
-    private void updateCurrent() {
-        if (isVisible() && situationData != null) {
+    private void updateCurrent(boolean inWork) {
+        if (isVisible()) {
             System.out.println("situation is: " + situationData);
             TextView textView = (TextView) summaryActivity.findViewById(R.id.currentlyAtWork);
             ImageView imageView = (ImageView) summaryActivity.findViewById(R.id.currentlyImageView);
-            SubSituationData currentSituation = situationData.getCurrentSituation();
-            if (isSituationInWork(currentSituation)) {
-                long startTimestamp = currentSituation.getStartTimestamp();
-                System.out.println("since: " + startTimestamp);
-                String date = DatesHelper.getTimestampTime(startTimestamp);
-                System.out.println("since date: " + startTimestamp);
-                textView.setText("Currently: At Work (since: " + date + ")");
+
+            if (inWork) {
+                textView.setText("Currently: At Work");
                 imageView.setImageResource(R.drawable.inside);
             } else {
-                SubSituationData previousSituation = situationData.getPreviousSituation();
-                if (isSituationInWork(previousSituation)) {
-                    long startTimestamp = currentSituation.getStartTimestamp();
-                    String date = DatesHelper.getTimestampTime(startTimestamp);
-                    textView.setText("Currently: Out of work (left at " + date + ")");
-                } else {
-                    textView.setText("Currently: Out of work");
-                }
+                textView.setText("Currently: Out of work");
                 imageView.setImageResource(R.drawable.outside);
             }
         }
-    }
-
-    private boolean isSituationInWork(SubSituationData situationData) {
-        return situationData != null &&
-                situationData.getPlace() != null &&
-                "work".equals(situationData.getPlace().getSemanticType());
     }
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -159,6 +143,9 @@ public class SummaryActivity extends Fragment {
         System.out.println("update today with - " + allLoginData);
         TextView textView = (TextView) summaryActivity.findViewById(R.id.dailyTextView);
         Double timeSpentAtWork = allLoginData.getDataForDate(new Date(), getContext()).getTotalTime();
+        if (timeSpentAtWork == 0 && situationData){
+            timeSpentAtWork = 60.0;
+        }
         int workingDays = 0;
         if (timeSpentAtWork > 0) {
             workingDays++;
@@ -168,8 +155,6 @@ public class SummaryActivity extends Fragment {
             textView.setText(time);
         }
     }
-
-
 
     private String getTextForData(double timeSpentAtWork, int workingDays) {
         String formatteedTime = SaveDataHelper.getPrettyTimeString(timeSpentAtWork);
@@ -211,7 +196,7 @@ public class SummaryActivity extends Fragment {
         cal.setTime(end);
         while (end.after(start) || SaveDataHelper.isSameDay(start, end)) {
             double currentVal = allLoginData.getDataForDate(end, getContext()).getTotalTime();
-            if (currentVal ==-1.0) {
+            if (currentVal == -1.0) {
                 return true;
             }
             timeSpentAtWork[0] += currentVal;

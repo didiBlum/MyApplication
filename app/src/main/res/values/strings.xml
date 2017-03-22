@@ -24,4 +24,7 @@
     <string name="currently">Currently:</string>
     <string name="send_us_feedback">Send us feedback</string>
     <string name="notifications_settings">Notifications settings</string>
+
+
+    <string name="google_play_awareness">AIzaSyDhXfN5lMCoTonJn34556kxkGJt3gF2wG8</string>
 </resources>

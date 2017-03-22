@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import com.adiBlum.adiblum.myapplication.model.AllLoginData;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -57,12 +58,21 @@ public class SaveDataHelper {
     }
 
     public static AllLoginData getDataFromFile(Context ctx) throws IOException, ClassNotFoundException {
-        FileInputStream fis = ctx.openFileInput(FILENAME);
-        ObjectInputStream is = new ObjectInputStream(fis);
-        AllLoginData allLoginData = (AllLoginData) is.readObject();
-        is.close();
-        fis.close();
-        return allLoginData;
+        File f = new File(FILENAME);
+        if(f.exists())
+        {
+            FileInputStream fis = ctx.openFileInput(FILENAME);
+            ObjectInputStream is = new ObjectInputStream(fis);
+            AllLoginData allLoginData = (AllLoginData) is.readObject();
+            is.close();
+            fis.close();
+            return allLoginData;
+        }
+        else {
+            AllLoginData allLoginData = new AllLoginData();
+            addToFile(allLoginData, ctx);
+            return allLoginData;
+        }
     }
 
     private static Map<String, Double> parseFile(String readFile) {

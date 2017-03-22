@@ -79,7 +79,7 @@ public class NeuraConnection {
                                 mNeuraApiClient.registerFirebaseToken(
                                         mainActivity, FirebaseInstanceId.getInstance().getToken());
                                 System.out.println("token is: " + FirebaseInstanceId.getInstance().getToken());
-                                mainActivity.askForData();
+//                                mainActivity.askForData();
                             }
 
                             private void saveAccessToken(String userToken) {
@@ -113,13 +113,12 @@ public class NeuraConnection {
             mNeuraApiClient.getMissingDataForEvent(eventName, new PickerCallback() {
                 @Override
                 public void onResult(boolean b) {
-                    SemanticsHelper.saveWorkplace(ctx, userToken);
-                    mainActivity.askForData();
+                    SemanticsHelper.saveWorkplace(ctx, userToken, mainActivity);
                 }
             });
         }
         else {
-            SemanticsHelper.saveWorkplace(ctx, userToken);
+            SemanticsHelper.saveWorkplace(ctx, userToken, mainActivity);
         }
     }
 

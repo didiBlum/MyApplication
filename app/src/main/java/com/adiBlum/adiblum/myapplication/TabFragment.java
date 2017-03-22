@@ -76,11 +76,10 @@ public class TabFragment extends Fragment {
     }
 
     public void handleUserSituation(Intent intent) {
-        Gson gson = new Gson();
-        String strObj = intent.getStringExtra(DataFetcherService.USER_SITUATION_RESULT);
-        SituationData situationData = gson.fromJson(strObj, SituationData.class);
+        String inWork = intent.getStringExtra(DataFetcherService.USER_SITUATION_RESULT);
         SummaryActivity summaryActivity = (SummaryActivity) getSummary();
-        summaryActivity.updateSituation(situationData);
+        System.out.println("update in work? " + inWork);
+        summaryActivity.updateSituation(Boolean.parseBoolean(inWork));
     }
 
     class MyAdapter extends FragmentPagerAdapter {

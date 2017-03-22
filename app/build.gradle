@@ -54,6 +54,7 @@ dependencies {
     compile 'com.google.firebase:firebase-messaging:10.0.1'
     compile 'com.splunk:mint-android-sdk:5.2.0'
     compile 'com.google.code.gson:gson:2.4'
+    compile 'com.google.android.gms:play-services-awareness:10.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
